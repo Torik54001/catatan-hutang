@@ -86,7 +86,6 @@
 <nav class="app-nav" aria-label="Navigasi utama"><button class="nav-btn active" type="button" data-target="input"><span class="nav-icon">＋</span><span>INPUT PELANGGAN</span></button><button class="nav-btn" type="button" data-target="list"><span class="nav-icon">▤</span><span>DAFTAR HUTANG</span></button><button class="nav-btn" type="button" data-target="settings"><span class="nav-icon">⚙</span><span>PENGATURAN</span></button></nav>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./config.js"></script>
 <script>
 (() => {
   'use strict';
@@ -106,7 +105,6 @@
     const phone=String(c.phone||'');
     return {id:isUuid(c.id)?String(c.id):uid(),name:String(c.name||'Tanpa nama'),phone,phoneKey:normalizePhone(c.phoneKey||phone),note:String(c.note||''),items,total,paid,payments,createdAt:String(c.createdAt||today()),updatedAt:String(c.updatedAt||today()),_dbUpdatedAt:c._dbUpdatedAt||null};
   };
-  const CONFIG=window.CATATAN_CONFIG||{};
   let sb=null, runtimeConfig=null, account=null, customers=[], editingId=null, editingBaseUpdatedAt=null, activeFilter='all', toastTimer=null, channel=null, pollTimer=null, loading=false, reloadAgain=false, cloudOnline=false, serverReachable=false, realtimeSubscribed=false;
   const cacheKey=()=>`catathutang_cloud_cache_${account?.account_code||'guest'}`;
 
@@ -118,7 +116,7 @@
   function switchPanel(name){document.querySelectorAll('[data-panel]').forEach(el=>el.hidden=el.dataset.panel!==name);document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.target===name));if(name==='list')renderRecords();if(name==='settings'){updateBackupOptions();updateStorageInfo();}window.scrollTo({top:0,behavior:'smooth'});}
   function showLogin(message=''){ $('loginScreen').hidden=false; $('loginError').textContent=message; $('loginButton').disabled=false; $('loginButton').textContent='MASUK KE AKUN PUSAT'; }
   function hideLogin(){ $('loginScreen').hidden=true; $('loginPin').value=''; }
-  function friendlyError(error){const m=String(error?.message||error||'Terjadi kesalahan');if(/duplicate key|unique constraint/i.test(m))return 'Nomor telepon sudah digunakan pelanggan lain.';if(/baru saja diubah dari perangkat lain/i.test(m))return 'Data sedang diedit dari HP lain. Data terbaru sudah dimuat; buka ulang Edit sebelum menyimpan.';if(/JWT|permission|row-level|not allowed/i.test(m))return 'Akses database ditolak. Pastikan SQL dan RLS sudah dipasang.';if(/fetch|network|Failed to/i.test(m))return 'Browser tidak dapat menghubungi Supabase. Periksa URL proyek, deploy Function catat-hutang-login, dan pengaturan CORS/Verify JWT. Ini belum tentu masalah sinyal HP.';return m.slice(0,240);}
+  function friendlyError(error){const m=String(error?.message||error||'Terjadi kesalahan');if(/duplicate key|unique constraint/i.test(m))return 'Nomor telepon sudah digunakan pelanggan lain.';if(/baru saja diubah dari perangkat lain/i.test(m))return 'Data sedang diedit dari HP lain. Data terbaru sudah dimuat; buka ulang Edit sebelum menyimpan.';if(/JWT|permission|row-level|not allowed/i.test(m))return 'Akses database ditolak. Pastikan SQL dan RLS sudah dipasang.';if(/fetch|network|Failed to/i.test(m))return 'Browser tidak dapat menghubungi Supabase. Periksa URL aplikasi, deployment API EdgeOne, dan koneksi internet. Ini belum tentu masalah sinyal HP.';return m.slice(0,240);}
 
   // Supabase Auth menyimpan access/refresh token di IndexedDB perangkat ini.
   // PIN tidak pernah disimpan. Penyimpanan ini khusus sesi login, bukan database pusat.
@@ -181,32 +179,27 @@
   };
 
   async function callLoginFunction(accountId,pin){
-    const url=runtimeConfig?.url;const key=runtimeConfig?.publishableKey;
-    if(!url||!key||!window.supabase?.createClient)throw new Error('Konfigurasi runtime Supabase belum berhasil dimuat dari Environment Function.');
+    if(!runtimeConfig?.url||!runtimeConfig?.publishableKey||!window.supabase?.createClient)throw new Error('Konfigurasi EdgeOne belum berhasil dimuat.');
     let response;
     try {
-      response=await fetch(`${url}/functions/v1/${CONFIG.LOGIN_FUNCTION||'catat-hutang-login'}`,{
+      response=await fetch('/api/login',{
         method:'POST',
-        headers:{'Content-Type':'application/json','apikey':key},
-        body:JSON.stringify({account_id:accountId,pin})
+        headers:{'Content-Type':'application/json','Accept':'application/json'},
+        body:JSON.stringify({account_id:accountId,pin}),
+        cache:'no-store'
       });
     } catch (networkError) {
-      console.error('Supabase login request failed:', networkError);
-      throw new Error('Tidak dapat menjangkau Supabase. Pastikan URL proyek benar dan Function catat-hutang-login sudah aktif.');
+      console.error('EdgeOne login request failed:', networkError);
+      throw new Error('Tidak dapat menjangkau API EdgeOne. Periksa deployment Functions dan koneksi internet.');
     }
     const body=await response.json().catch(()=>({}));
     if(!response.ok) {
       const detail=body.error||`Login server gagal (HTTP ${response.status}).`;
-      if(response.status===404)throw new Error('Function catat-hutang-login tidak ditemukan. Deploy function pada project Supabase yang sama.');
-      if(response.status===401) {
-        const gatewayMessage=String(body.error||body.message||'');
-        if(/invalid jwt|api.?key|unauthori[sz]ed/i.test(gatewayMessage))throw new Error('Publishable Key tidak cocok dengan proyek Supabase atau Verify JWT belum dimatikan pada Function.');
-        throw new Error(gatewayMessage||'ID akun atau PIN tidak cocok.');
-      }
-      if(response.status===500||response.status===503)throw new Error(detail);
+      if(response.status===404)throw new Error('API /api/login tidak ditemukan. Pastikan folder functions ikut ter-deploy pada EdgeOne.');
+      if(response.status===401)throw new Error(detail||'ID akun atau PIN tidak cocok.');
       throw new Error(detail);
     }
-    if(!body.session?.access_token||!body.session?.refresh_token)throw new Error('Server tidak mengembalikan sesi login. Periksa kode Function.');
+    if(!body.session?.access_token||!body.session?.refresh_token)throw new Error('API EdgeOne tidak mengembalikan sesi login yang valid.');
     return body.session;
   }
   async function activateAccount(){
@@ -325,7 +318,7 @@
 
   async function init(){
     $('loginForm').addEventListener('submit',login);
-    const defaultAccountId=String(CONFIG.DEFAULT_ACCOUNT_ID||'');$('loginAccount').value=defaultAccountId;$('accountDefaultLabel').textContent=defaultAccountId||'Belum diatur';
+    $('loginAccount').value='';$('accountDefaultLabel').textContent='Mengambil ID akun dari Environment EdgeOne...';
     document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>switchPanel(btn.dataset.target)));
     $('customerForm').addEventListener('submit',submitCustomer);$('addItem').addEventListener('click',()=>addItemRow());
     $('itemRows').addEventListener('click',event=>{if(event.target.closest('.remove-item')){const rows=document.querySelectorAll('.item-row');if(rows.length<=1){showToast('Minimal sisakan satu baris barang.');return;}event.target.closest('.item-row').remove();updateItemTotal();}});
@@ -337,26 +330,26 @@
     $('itemRows').innerHTML='';addItemRow();updateStats();renderRecords();
     window.addEventListener('online',()=>{if(account)loadRecords();else if(sb)restoreSavedSession();});window.addEventListener('offline',()=>{serverReachable=false;setCloudStatus('● OFFLINE',false);});
 
-    // Ambil Publishable Key dari Environment Supabase melalui endpoint publik Function.
-    // Key ini memang boleh dipakai browser; Secret Key tidak pernah dikirim ke sini.
+    // Seluruh konfigurasi dibaca dari Environment Variables EdgeOne melalui API server.
+    // Hanya URL dan Publishable Key (memang bersifat publik) yang dikirim ke browser.
+    // Secret Key dan PIN bootstrap hanya digunakan oleh functions/api/login.js.
     try {
-      const url=String(CONFIG.SUPABASE_URL||'').trim().replace(/\/$/,'');
-      const functionName=String(CONFIG.LOGIN_FUNCTION||'catat-hutang-login').trim();
-      if(!url||!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(url))throw new Error('URL proyek Supabase di config.js tidak valid.');
       if(!window.supabase?.createClient)throw new Error('Library Supabase belum termuat. Periksa koneksi CDN.');
-      const response=await fetch(`${url}/functions/v1/${encodeURIComponent(functionName)}`,{method:'GET',headers:{'Accept':'application/json'},cache:'no-store'});
+      const response=await fetch('/api/runtime-config',{method:'GET',headers:{'Accept':'application/json'},cache:'no-store'});
       const payload=await response.json().catch(()=>({}));
-      if(!response.ok)throw new Error(payload.error||`Gagal membaca Environment Supabase (HTTP ${response.status}).`);
-      const runtimeUrl=String(payload.supabase_url||'').replace(/\/$/,'');
+      if(!response.ok)throw new Error(payload.error||`Gagal membaca Environment EdgeOne (HTTP ${response.status}).`);
+      const runtimeUrl=String(payload.supabase_url||'').trim().replace(/\/$/,'');
       const publishableKey=String(payload.publishable_key||'');
-      if(runtimeUrl!==url)throw new Error('URL proyek pada Environment Function tidak sama dengan proyek di config.js.');
-      if(!publishableKey)throw new Error('SUPABASE_PUBLISHABLE_KEYS.default tidak ditemukan pada Environment Supabase.');
-      runtimeConfig={url:runtimeUrl,publishableKey};
+      if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(runtimeUrl))throw new Error('SUPABASE_URL pada Environment EdgeOne tidak valid.');
+      if(!publishableKey)throw new Error('SUPABASE_PUBLISHABLE_KEY belum diisi di Environment EdgeOne.');
+      runtimeConfig={url:runtimeUrl,publishableKey,defaultAccountId:String(payload.default_account_id||'')};
+      $('loginAccount').value=runtimeConfig.defaultAccountId;
+      $('accountDefaultLabel').textContent=runtimeConfig.defaultAccountId||'Masukkan ID akun';
       const projectRef=new URL(runtimeConfig.url).hostname.split('.')[0];
       sb=window.supabase.createClient(runtimeConfig.url,runtimeConfig.publishableKey,{auth:{storage:authStorage,storageKey:`sb-${projectRef}-auth-token`,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
     } catch(error) {
-      console.error('Supabase runtime bootstrap failed:',error);
-      showLogin(`Gagal memuat konfigurasi Environment Supabase: ${friendlyError(error)}`);
+      console.error('EdgeOne runtime bootstrap failed:',error);
+      showLogin(`Gagal memuat konfigurasi Environment EdgeOne: ${friendlyError(error)}`);
       $('loginButton').disabled=true;
     }
     if(sb){
