@@ -1,0 +1,4 @@
+project_id = "qmegieabtojefmnffhnl"
+
+[functions.catat-hutang-login]
+verify_jwt = false
