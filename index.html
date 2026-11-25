@@ -35,12 +35,12 @@
     <h2>Masuk Catat Hutang</h2>
     <p>Gunakan ID akun bersama dan PIN yang sama di setiap HP. Semua pengguna akan melihat daftar hutang pusat yang sama.</p>
     <label for="loginAccount">ID AKUN</label>
-    <input id="loginAccount" inputmode="numeric" autocomplete="username" value="085182819967" maxlength="16" required>
+    <input id="loginAccount" type="tel" inputmode="tel" autocomplete="username" placeholder="Nomor akun" maxlength="16" required>
     <label for="loginPin">PIN LOGIN</label>
-    <input id="loginPin" type="password" autocomplete="current-password" minlength="6" maxlength="72" placeholder="Masukkan PIN akun" required>
+    <input id="loginPin" type="password" inputmode="numeric" autocomplete="current-password" minlength="6" maxlength="72" placeholder="Masukkan PIN akun" required>
     <button class="btn btn-primary" id="loginButton" type="submit">MASUK KE AKUN PUSAT</button>
     <div class="login-error" id="loginError" role="alert" aria-live="polite"></div>
-    <div class="login-tip">ID akun awal: <b>085182819967</b><br>PIN ditentukan saat menyiapkan akun di Supabase. Jangan bagikan PIN kepada orang lain yang tidak boleh mengakses data hutang.</div>
+    <div class="login-tip">ID akun awal: <b id="accountDefaultLabel">—</b><br>PIN ditentukan saat menyiapkan akun di Supabase. Jangan bagikan PIN kepada orang lain yang tidak boleh mengakses data hutang.</div>
   </form>
 </div>
 
@@ -53,7 +53,7 @@
     <div class="panel-head"><h2 id="formTitle">Input Pelanggan</h2><p>Isi nama dan nomor. Tambahkan beberapa barang; jumlah hutang dihitung otomatis.</p></div>
     <form id="customerForm" class="form-body" autocomplete="on">
       <div class="field"><label for="customerName">NAMA PELANGGAN</label><input id="customerName" name="name" autocomplete="name" placeholder="Masukkan nama pelanggan" required maxlength="100"></div>
-      <div class="field"><label for="customerPhone">NOMOR TELEPON / WHATSAPP</label><div class="input-with-button"><input id="customerPhone" name="phone" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" required maxlength="24"><button class="btn btn-light" type="button" id="pickContact">☷ Kontak</button></div><div class="hint">Nomor 08 dan 628 akan dikenali sebagai nomor yang sama. Nomor duplikat akan digabung ke pelanggan sebelumnya.</div></div>
+      <div class="field"><label for="customerPhone">NOMOR TELEPON / WHATSAPP</label><div class="input-with-button"><input id="customerPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="08xxxxxxxxxx" required maxlength="24"><button class="btn btn-light" type="button" id="pickContact">☷ Kontak</button></div><div class="hint">Nomor 08 dan 628 akan dikenali sebagai nomor yang sama. Nomor duplikat akan digabung ke pelanggan sebelumnya.</div></div>
       <div class="items-area"><div class="items-title">DAFTAR BARANG / RINCIAN HUTANG</div><div class="items-head"><div>NAMA BARANG</div><div>NOMINAL (RP)</div><div>HAPUS</div></div><div id="itemRows"></div><div class="items-footer"><button class="btn btn-light btn-small" type="button" id="addItem">＋ Tambah Barang</button><div><div class="items-total-label">TOTAL HUTANG</div><div class="items-total" id="itemsTotal">Rp0</div></div></div></div>
       <div class="field"><label for="initialPayment">PEMBAYARAN AWAL (OPSIONAL)</label><div class="money-wrap"><span>Rp</span><input id="initialPayment" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div><div class="hint">Isi 0 bila belum ada pembayaran.</div></div>
       <div class="field"><label for="customerNote">CATATAN TAMBAHAN (OPSIONAL)</label><textarea id="customerNote" placeholder="Contoh: dibayar hari Jumat" maxlength="500"></textarea></div>
@@ -71,7 +71,7 @@
     <div class="panel-head"><h2>Pengaturan Akun Pusat</h2><p>Satu akun digunakan bersama oleh beberapa HP. Data disimpan di Supabase dan diperbarui realtime.</p></div>
     <div class="form-body"><div class="settings-grid">
       <div class="setting-card"><h3>AKUN BERSAMA</h3><p id="accountInfo">Belum terhubung ke akun pusat.</p><button class="btn btn-light" type="button" id="signOut">Keluar dari Akun</button></div>
-      <div class="setting-card"><h3>GANTI PIN LOGIN</h3><p>PIN baru akan berlaku di semua perangkat yang memakai akun ini. Minimal 6 karakter.</p><input class="backup-select" id="newPin" type="password" minlength="6" maxlength="72" autocomplete="new-password" placeholder="PIN baru"><button class="btn btn-primary" type="button" id="changePin">Simpan PIN Baru</button></div>
+      <div class="setting-card"><h3>GANTI PIN LOGIN</h3><p>PIN baru akan berlaku di semua perangkat yang memakai akun ini. Minimal 6 karakter.</p><input class="backup-select" id="newPin" type="password" inputmode="numeric" minlength="6" maxlength="72" autocomplete="new-password" placeholder="PIN baru"><button class="btn btn-primary" type="button" id="changePin">Simpan PIN Baru</button></div>
       <div class="setting-card"><h3>CADANGAN DATA PUSAT</h3><p>Unduh seluruh pelanggan, rincian barang, dan pembayaran dari database pusat ke file JSON.</p><button class="btn btn-primary" type="button" id="downloadBackup">⬇ Unduh Cadangan</button></div>
       <div class="setting-card"><h3>PULIHKAN DARI FILE</h3><p>Impor file JSON ke akun pusat. Isi data akun akan diganti setelah konfirmasi; perangkat lain ikut diperbarui.</p><input id="restoreFile" type="file" accept=".json,application/json" hidden><button class="btn btn-light" type="button" id="chooseRestore">↻ Pilih File Cadangan</button></div>
       <div class="setting-card"><h3>PULIHKAN CADANGAN SERVER</h3><p>Snapshot otomatis dibuat di server sebelum perubahan data. Tersedia hingga 12 cadangan terakhir.</p><select class="backup-select" id="backupSelect"><option value="">Memuat cadangan...</option></select><button class="btn btn-light" type="button" id="restoreAuto">↶ Pulihkan Cadangan Server</button></div>
@@ -118,13 +118,36 @@
   function switchPanel(name){document.querySelectorAll('[data-panel]').forEach(el=>el.hidden=el.dataset.panel!==name);document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.target===name));if(name==='list')renderRecords();if(name==='settings'){updateBackupOptions();updateStorageInfo();}window.scrollTo({top:0,behavior:'smooth'});}
   function showLogin(message=''){ $('loginScreen').hidden=false; $('loginError').textContent=message; $('loginButton').disabled=false; $('loginButton').textContent='MASUK KE AKUN PUSAT'; }
   function hideLogin(){ $('loginScreen').hidden=true; $('loginPin').value=''; }
-  function friendlyError(error){const m=String(error?.message||error||'Terjadi kesalahan');if(/duplicate key|unique constraint/i.test(m))return 'Nomor telepon sudah digunakan pelanggan lain.';if(/baru saja diubah dari perangkat lain/i.test(m))return 'Data sedang diedit dari HP lain. Data terbaru sudah dimuat; buka ulang Edit sebelum menyimpan.';if(/JWT|permission|row-level|not allowed/i.test(m))return 'Akses database ditolak. Pastikan SQL dan RLS sudah dipasang.';if(/fetch|network|Failed to/i.test(m))return 'Koneksi internet/server gagal. Periksa jaringan lalu coba lagi.';return m.slice(0,240);}
+  function friendlyError(error){const m=String(error?.message||error||'Terjadi kesalahan');if(/duplicate key|unique constraint/i.test(m))return 'Nomor telepon sudah digunakan pelanggan lain.';if(/baru saja diubah dari perangkat lain/i.test(m))return 'Data sedang diedit dari HP lain. Data terbaru sudah dimuat; buka ulang Edit sebelum menyimpan.';if(/JWT|permission|row-level|not allowed/i.test(m))return 'Akses database ditolak. Pastikan SQL dan RLS sudah dipasang.';if(/fetch|network|Failed to/i.test(m))return 'Browser tidak dapat menghubungi Supabase. Periksa Project URL, Publishable Key, dan pastikan Function catat-hutang-login sudah di-deploy pada project yang sama. Ini belum tentu masalah sinyal HP.';return m.slice(0,240);}
 
   async function callLoginFunction(accountId,pin){
     const url=String(CONFIG.SUPABASE_URL||'').replace(/\/$/,'');const key=String(CONFIG.SUPABASE_PUBLISHABLE_KEY||'');
-    if(!url||!key||key.includes('TEMPEL_')||!window.supabase?.createClient)throw new Error('Isi SUPABASE_PUBLISHABLE_KEY pada file config.js terlebih dahulu.');
-    const response=await fetch(`${url}/functions/v1/${CONFIG.LOGIN_FUNCTION||'catat-hutang-login'}`,{method:'POST',headers:{'Content-Type':'application/json','apikey':key},body:JSON.stringify({account_id:accountId,pin})});
-    const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body.error||`Login server gagal (HTTP ${response.status}).`);if(!body.session?.access_token||!body.session?.refresh_token)throw new Error('Server tidak mengembalikan sesi login.');return body.session;
+    if(!url||!key||key.includes('TEMPEL_')||!window.supabase?.createClient)throw new Error('Konfigurasi Supabase belum lengkap. Periksa URL proyek dan Publishable Key di config.js.');
+    let response;
+    try {
+      response=await fetch(`${url}/functions/v1/${CONFIG.LOGIN_FUNCTION||'catat-hutang-login'}`,{
+        method:'POST',
+        headers:{'Content-Type':'application/json','apikey':key},
+        body:JSON.stringify({account_id:accountId,pin})
+      });
+    } catch (networkError) {
+      console.error('Supabase login request failed:', networkError);
+      throw new Error('Tidak dapat menjangkau Supabase. Pastikan URL proyek benar dan Function catat-hutang-login sudah aktif.');
+    }
+    const body=await response.json().catch(()=>({}));
+    if(!response.ok) {
+      const detail=body.error||`Login server gagal (HTTP ${response.status}).`;
+      if(response.status===404)throw new Error('Function catat-hutang-login tidak ditemukan. Deploy function pada project Supabase yang sama.');
+      if(response.status===401) {
+        const gatewayMessage=String(body.error||body.message||'');
+        if(/invalid jwt|api.?key|unauthori[sz]ed/i.test(gatewayMessage))throw new Error('Publishable Key tidak cocok dengan proyek Supabase atau Verify JWT belum dimatikan pada Function.');
+        throw new Error(gatewayMessage||'ID akun atau PIN tidak cocok.');
+      }
+      if(response.status===500||response.status===503)throw new Error(detail);
+      throw new Error(detail);
+    }
+    if(!body.session?.access_token||!body.session?.refresh_token)throw new Error('Server tidak mengembalikan sesi login. Periksa kode Function.');
+    return body.session;
   }
   async function activateAccount(){
     const {data:userResult,error:userError}=await sb.auth.getUser();if(userError||!userResult.user)throw userError||new Error('Sesi login tidak ditemukan.');
@@ -229,7 +252,7 @@
     const url=String(CONFIG.SUPABASE_URL||'').trim(),key=String(CONFIG.SUPABASE_PUBLISHABLE_KEY||'').trim();
     if(window.supabase?.createClient&&url&&key&&!key.includes('TEMPEL_'))sb=window.supabase.createClient(url,key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
     $('loginForm').addEventListener('submit',login);
-    $('loginAccount').value=String(CONFIG.DEFAULT_ACCOUNT_ID||'085182819967');
+    const defaultAccountId=String(CONFIG.DEFAULT_ACCOUNT_ID||'');$('loginAccount').value=defaultAccountId;$('accountDefaultLabel').textContent=defaultAccountId||'Belum diatur';
     if(!sb){showLogin('Konfigurasi belum lengkap. Tempel Supabase Publishable Key di config.js, lalu unggah ulang file.');$('loginButton').disabled=true;}
     document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>switchPanel(btn.dataset.target)));
     $('customerForm').addEventListener('submit',submitCustomer);$('addItem').addEventListener('click',()=>addItemRow());
