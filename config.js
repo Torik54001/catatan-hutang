@@ -1,6 +1,7 @@
-
 /*
  * Konfigurasi publik CatatHutang Cloud.
+ * Project URL sudah diisi. Tempel SUPABASE PUBLISHABLE KEY di bawah.
+ * Aman ditaruh di frontend: ini BUKAN service_role/secret key.
  */
 window.CATATAN_CONFIG = Object.freeze({
   SUPABASE_URL: 'https://gaeavsoahzdlgapeieui.supabase.co',

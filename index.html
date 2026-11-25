@@ -123,7 +123,7 @@
   async function callLoginFunction(accountId,pin){
     const url=String(CONFIG.SUPABASE_URL||'').replace(/\/$/,'');const key=String(CONFIG.SUPABASE_PUBLISHABLE_KEY||'');
     if(!url||!key||key.includes('TEMPEL_')||!window.supabase?.createClient)throw new Error('Isi SUPABASE_PUBLISHABLE_KEY pada file config.js terlebih dahulu.');
-    const response=await fetch(`${url}/functions/v1/${CONFIG.LOGIN_FUNCTION||'catat-hutang-login'}`,{method:'POST',headers:{'Content-Type':'application/json','apikey':key,'Authorization':`Bearer ${key}`},body:JSON.stringify({account_id:accountId,pin})});
+    const response=await fetch(`${url}/functions/v1/${CONFIG.LOGIN_FUNCTION||'catat-hutang-login'}`,{method:'POST',headers:{'Content-Type':'application/json','apikey':key},body:JSON.stringify({account_id:accountId,pin})});
     const body=await response.json().catch(()=>({}));if(!response.ok)throw new Error(body.error||`Login server gagal (HTTP ${response.status}).`);if(!body.session?.access_token||!body.session?.refresh_token)throw new Error('Server tidak mengembalikan sesi login.');return body.session;
   }
   async function activateAccount(){
