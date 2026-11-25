@@ -487,6 +487,152 @@
       .get-contact-button { padding:0 10px; font-size:11px; }
     }
 
+
+
+    /* Aksesibilitas: tampilan vertikal besar dengan ukuran teks minimum yang konsisten */
+    html { font-size:18px; }
+    body { font-size:18px; line-height:1.5; }
+    .topbar { padding:16px 18px; }
+    .topbar-inner { max-width:900px; }
+    .brand { font-size:22px; }
+    .brand-mark { width:50px; height:50px; font-size:24px; }
+    .local-badge { font-size:14px; }
+    main { width:min(900px, calc(100% - 28px)); margin:28px auto 55px; }
+    .intro h1 { font-size:36px; line-height:1.2; }
+    .intro p { font-size:18px; line-height:1.55; }
+    .stats { gap:14px; margin-bottom:20px; }
+    .stat { min-height:138px; padding:23px 24px; border-radius:20px; }
+    .stat-label { font-size:15px; }
+    .stat-value { font-size:34px; line-height:1.25; }
+    .stat-note { font-size:14px; }
+    .workspace { display:flex; flex-direction:column; gap:20px; }
+    .panel { border-radius:21px; }
+    .panel-head { padding:23px 24px 18px; }
+    .panel-head h2 { font-size:23px; }
+    .panel-head p { font-size:16px; }
+    .form-body { padding:24px; }
+    .field { margin-bottom:21px; }
+    .field label { font-size:17px; margin-bottom:10px; }
+    .field input { min-height:66px; padding:16px 18px; font-size:19px; border-radius:15px; }
+    .field .hint { font-size:14px; line-height:1.55; }
+    .money-input span { font-size:17px; left:16px; }
+    .money-input input { padding-left:52px; }
+    .form-actions { gap:12px; margin-top:25px; }
+    .btn { min-height:65px; padding:15px 18px; border-radius:15px; font-size:18px; }
+    .btn-light { min-height:60px; }
+    .sync-panel { margin-bottom:20px; }
+    .sync-head { padding:21px 23px; align-items:flex-start; flex-direction:column; }
+    .sync-title strong { font-size:21px; }
+    .sync-title span { font-size:15px; line-height:1.55; }
+    .sync-state { font-size:14px; padding:9px 13px; }
+    .sync-body { padding:0 23px 23px; }
+    .sync-login-body { padding-top:4px; }
+    .sync-body .field input { min-height:66px; font-size:19px; }
+    .sync-help { padding:17px 18px; font-size:15px; line-height:1.65; border-radius:15px; }
+    .sync-details summary { padding:19px 5px; font-size:16px; }
+    .sync-admin-body { padding:0 0 8px; }
+    .sync-buttons { grid-template-columns:1fr; gap:11px; margin-top:17px; }
+    .sync-buttons .btn, .sync-buttons .btn-primary { grid-column:auto; min-height:62px; font-size:16px; }
+    .sync-main-buttons { margin:22px 0 12px; }
+    .sync-footnote { font-size:13px; line-height:1.6; margin-top:16px; }
+    .list-toolbar { padding:19px 21px; }
+    .searchbox { min-height:64px; border-radius:15px; padding:0 17px; }
+    .searchbox span { font-size:25px; }
+    .searchbox input { height:61px; font-size:18px; }
+    .status-tabs { gap:10px; }
+    .status-tab { min-height:58px; padding:12px 16px; font-size:16px; border-radius:13px; }
+    .status-tab-count { min-width:25px; height:25px; font-size:13px; }
+    .records { gap:16px; padding:17px; }
+    .debt-card { padding:23px; border-radius:20px; }
+    .debt-card .record-name { font-size:24px; }
+    .debt-card .record-desc { font-size:16px; }
+    .debt-card .record-phone { font-size:15px; }
+    .debt-card .status { font-size:13px; padding:9px 12px; }
+    .record-items { gap:9px; margin-top:13px; }
+    .record-item-line { font-size:15px; line-height:1.5; }
+    .debt-amounts { margin:21px 0 20px; padding:8px 17px; border-radius:16px; }
+    .amount-tile { padding:15px 0; }
+    .amount-tile span { font-size:16px; }
+    .amount-tile strong { font-size:18px; }
+    .amount-tile.amount-remaining strong { font-size:21px; }
+    .debt-card .record-actions { grid-template-columns:1fr; gap:11px; }
+    .debt-card .action { min-height:61px; padding:13px; font-size:16px; border-radius:14px; }
+    .debt-card .payment-box { padding:18px; }
+    .debt-card .payment-box label { font-size:16px; }
+    .debt-card .payment-row { gap:11px; }
+    .debt-card .payment-row input { min-height:64px; font-size:19px; }
+    .debt-card .payment-row .btn { min-height:62px; }
+    .debt-card .record-meta { font-size:13px; }
+    .item-row { grid-template-columns:minmax(0,1fr) 65px; gap:12px; padding:16px; border-radius:17px; }
+    .item-input-wrap:first-child { grid-column:1 / -1; }
+    .item-input-wrap:nth-child(2) { grid-column:1; }
+    .item-input-wrap label { font-size:15px; margin-bottom:9px; }
+    .item-input-wrap input { min-height:62px; padding:14px; font-size:18px; border-radius:13px; }
+    .item-input-wrap .money-input span { font-size:14px; }
+    .item-input-wrap .money-input input { padding-left:43px; }
+    .remove-item { grid-column:2; grid-row:2; width:65px; height:62px; font-size:30px; border-radius:13px; }
+    .add-item-button { min-height:62px; font-size:17px; border-radius:14px; }
+    .calculated-total { padding:19px; border-radius:16px; }
+    .calculated-total strong { font-size:29px; }
+    .calculated-total span { font-size:15px; }
+    .contact-input-row { gap:11px; }
+    .get-contact-button { min-height:66px; padding:0 17px; font-size:16px; border-radius:14px; }
+    .empty { padding:65px 22px; }
+    .empty-icon { width:65px; height:65px; font-size:28px; }
+    .empty strong { font-size:20px; }
+    .empty span { font-size:16px; }
+    .footer-note { font-size:14px; line-height:1.6; }
+    .toast { font-size:16px; padding:16px 20px; }
+    @media (max-width:560px) {
+      html { font-size:18px; }
+      main { width:calc(100% - 20px); margin:18px auto 42px; }
+      .topbar { padding:13px 14px; }
+      .brand { font-size:20px; }
+      .local-badge { font-size:12px; }
+      .intro h1 { font-size:33px; }
+      .intro p { font-size:17px; }
+      .stat { min-height:126px; padding:20px; }
+      .stat-label { font-size:14px; }
+      .stat-value { font-size:31px; }
+      .panel-head { padding:20px; }
+      .form-body { padding:19px; }
+      .field label { font-size:17px; }
+      .field input, .sync-body .field input { min-height:66px; font-size:19px; }
+      .btn { min-height:64px; font-size:18px; }
+      .sync-head { padding:19px; }
+      .sync-body { padding:0 19px 20px; }
+      .sync-title strong { font-size:20px; }
+      .sync-title span { font-size:15px; }
+      .sync-help { font-size:15px; }
+      .sync-buttons .btn { font-size:16px; }
+      .list-toolbar { padding:15px; }
+      .searchbox { min-height:62px; }
+      .searchbox input { height:59px; font-size:18px; }
+      .records { padding:13px; gap:14px; }
+      .debt-card { padding:19px; }
+      .debt-card .record-name { font-size:22px; }
+      .debt-card .record-desc { font-size:15px; }
+      .debt-card .record-phone { font-size:14px; }
+      .debt-card .action { min-height:61px; font-size:16px; }
+      .amount-tile span { font-size:15px; }
+      .amount-tile strong { font-size:18px; }
+      .amount-tile.amount-remaining strong { font-size:20px; }
+      .record-item-line { font-size:15px; }
+      .item-row { grid-template-columns:minmax(0,1fr) 58px; }
+      .item-input-wrap input { min-height:62px; font-size:18px; }
+      .remove-item { width:58px; height:62px; }
+      .get-contact-button { min-height:66px; font-size:15px; padding:0 12px; }
+      .payment-row input, .payment-row .btn { min-height:62px; font-size:18px; }
+      .toast { font-size:15px; }
+    }
+    @media (max-width:360px) {
+      .local-badge { max-width:132px; text-align:right; line-height:1.25; }
+      .debt-card-head { flex-direction:column; }
+      .debt-card .status { align-self:flex-start; }
+      .contact-input-row { flex-direction:column; }
+      .get-contact-button { width:100%; }
+    }
+
   </style>
 </head>
 <body>
@@ -503,55 +649,66 @@
       <p>Kelola tagihan dan pembayaran dengan lebih rapi.</p>
     </section>
 
-    <section class="panel sync-panel" aria-label="Penyimpanan lintas perangkat">
+    <section class="panel sync-panel" aria-label="Masuk dan sinkronisasi database">
       <div class="sync-head">
         <div class="sync-title">
-          <strong>Penyimpanan & sinkronisasi</strong>
-          <span>Gunakan database yang sama agar catatan dapat dibuka dari HP lain.</span>
+          <strong>Masuk ke penyimpanan hutang</strong>
+          <span>Masukkan ID dan PIN yang sama dari setiap HP untuk memulihkan catatan.</span>
         </div>
-        <span class="sync-state" id="cloudStatus">Mode lokal</span>
+        <span class="sync-state" id="cloudStatus">Siap masuk</span>
       </div>
-      <details class="sync-details" id="cloudSettings">
-        <summary>Hubungkan database lintas HP</summary>
-        <div class="sync-body">
-          <div class="sync-help">
-            <strong>ID database Anda sudah disiapkan: 085182819967.</strong><br>
-            Agar data benar-benar berpindah antar-HP, aplikasi perlu database cloud. Siapkan Supabase Free satu kali, lalu gunakan URL, kunci publik, ID, dan PIN yang sama di kedua HP.
-          </div>
-          <div class="field">
-            <label for="cloudAccount">ID database</label>
-            <input id="cloudAccount" type="text" value="085182819967" maxlength="40" inputmode="text" autocomplete="off">
-          </div>
-          <div class="field">
-            <label for="supabaseUrl">URL Project Supabase</label>
-            <input id="supabaseUrl" type="url" placeholder="https://xxxxxxxx.supabase.co" autocomplete="url">
-          </div>
-          <div class="field">
-            <label for="supabaseKey">Publishable key / anon public key</label>
-            <input id="supabaseKey" type="text" placeholder="Tempel kunci publik Supabase" autocomplete="off" spellcheck="false">
-            <div class="hint">Gunakan kunci publik (anon/publishable), jangan pernah tempel service_role key.</div>
-          </div>
-          <div class="field">
-            <label for="cloudPin">PIN rahasia database</label>
-            <input id="cloudPin" type="password" minlength="8" maxlength="128" placeholder="Buat PIN rahasia minimal 8 karakter" autocomplete="new-password">
-            <div class="hint">Buat PIN yang hanya Anda ketahui. Masukkan PIN yang sama saat membuka dari HP lain. PIN tidak disimpan di perangkat.</div>
-          </div>
-          <div class="sync-buttons">
-            <button class="btn btn-primary" id="connectCloud" type="button">Hubungkan & sinkronkan</button>
-            <button class="btn btn-light" id="refreshCloud" type="button" disabled>Muat data terbaru</button>
-            <button class="btn btn-light" id="copySetupSql" type="button">Salin SQL setup database</button>
-            <button class="btn btn-light" id="disconnectCloud" type="button" disabled>Putuskan koneksi</button>
-          </div>
-          <div class="sync-help">
-            <strong>Setup satu kali:</strong><br>
-            1. Buat project gratis di Supabase.<br>
-            2. Tekan <strong>Salin SQL setup database</strong>, buka Supabase → SQL Editor → New query, tempel SQL, lalu Run.<br>
-            3. Ambil Project URL dan Publishable/anon key dari Project Settings → API, lalu isi di atas.<br>
-            4. Hubungkan HP pertama. Di HP kedua, buka file/aplikasi yang sama dan masukkan URL, key, ID, serta PIN yang sama.
-          </div>
-          <p class="sync-footnote">ID hanya alamat akun database, bukan kata sandi. Jangan bagikan PIN atau kunci pribadi. Sinkronisasi memerlukan internet dan sebaiknya dibuka melalui alamat HTTPS; saat offline, catatan tetap disimpan di perangkat ini.</p>
+      <div class="sync-body sync-login-body">
+        <div class="sync-help sync-primary-help" id="syncPrimaryHelp">
+          <strong>ID database Anda</strong><br>
+          ID sudah terisi otomatis. Masukkan PIN database untuk mengambil data dari cloud.
         </div>
-      </details>
+        <div class="field">
+          <label for="cloudAccount">ID database</label>
+          <input id="cloudAccount" type="text" value="085182819967" maxlength="40" inputmode="text" autocomplete="username">
+        </div>
+        <div class="field">
+          <label for="cloudPin">PIN database</label>
+          <input id="cloudPin" type="password" minlength="8" maxlength="128" placeholder="Masukkan PIN rahasia" autocomplete="current-password">
+          <div class="hint">PIN tidak disimpan. Gunakan PIN yang sama di setiap HP.</div>
+        </div>
+        <div class="sync-buttons sync-main-buttons">
+          <button class="btn btn-primary" id="connectCloud" type="button">Masuk & pulihkan data</button>
+          <button class="btn btn-light" id="refreshCloud" type="button" disabled>Muat data terbaru</button>
+          <button class="btn btn-light" id="disconnectCloud" type="button" disabled>Keluar dari database</button>
+        </div>
+        <details class="sync-details" id="cloudSettings">
+          <summary>Pengaturan awal aplikasi (admin)</summary>
+          <div class="sync-body sync-admin-body">
+            <div class="sync-help">
+              <strong>Pengaturan ini cukup sekali untuk menyiapkan file aplikasi.</strong><br>
+              Masukkan Project URL dan Publishable Key Supabase, lalu buat file HTML siap pakai. Setelah file siap pakai diunggah ke hosting, HP lain cukup memasukkan ID dan PIN.
+            </div>
+            <div class="field">
+              <label for="supabaseUrl">URL Project Supabase</label>
+              <input id="supabaseUrl" type="url" placeholder="https://xxxxxxxx.supabase.co" autocomplete="url">
+            </div>
+            <div class="field">
+              <label for="supabaseKey">Publishable Key / anon public key</label>
+              <input id="supabaseKey" type="text" placeholder="sb_publishable_..." autocomplete="off" spellcheck="false">
+              <div class="hint">Hanya gunakan Publishable Key atau anon public key. Jangan pernah memasukkan Secret Key atau service_role.</div>
+            </div>
+            <div class="sync-buttons">
+              <button class="btn btn-primary" id="saveCloudSetup" type="button">Simpan pengaturan di HP ini</button>
+              <button class="btn btn-light" id="buildConfiguredHtml" type="button">Buat HTML siap pakai untuk semua HP</button>
+              <button class="btn btn-light" id="copySetupSql" type="button">Salin SQL setup database</button>
+            </div>
+            <div class="sync-help">
+              <strong>Langkah satu kali:</strong><br>
+              1. Buat project di Supabase dan jalankan file <strong>supabase-setup.sql</strong> di SQL Editor.<br>
+              2. Isi Project URL dan Publishable Key di atas, lalu simpan pengaturan.<br>
+              3. Di HP utama yang memiliki catatan, masukkan ID dan PIN lalu tekan <strong>Masuk &amp; pulihkan data</strong> untuk membuat/menyimpan database cloud.<br>
+              4. Kembali ke pengaturan admin, tekan <strong>Buat HTML siap pakai untuk semua HP</strong> dan unggah hasilnya ke hosting yang sama.<br>
+              5. HP lain cukup memasukkan ID <strong>085182819967</strong> dan PIN yang sama.
+            </div>
+          </div>
+        </details>
+        <p class="sync-footnote">Saat berhasil masuk, data cloud menjadi data utama dan menggantikan daftar lokal pada HP tersebut. Perubahan akan tersinkron otomatis saat internet tersedia. Gunakan halaman HTTPS untuk sinkronisasi.</p>
+      </div>
     </section>
 
     <section class="stats" aria-label="Ringkasan hutang">
@@ -633,7 +790,7 @@
         <div class="records" id="records" aria-live="polite"></div>
       </section>
     </section>
-    <p class="footer-note">Data otomatis tersimpan di perangkat. Setelah database cloud dihubungkan, perubahan juga disinkronkan agar dapat dibuka dari HP lain.</p>
+    <p class="footer-note">Data tersimpan di perangkat dan, setelah masuk ke database cloud, otomatis disinkronkan agar dapat dipulihkan di HP lain.</p>
   </main>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -641,6 +798,7 @@
   <script>
     (() => {
       'use strict';
+      const SUPABASE_BOOTSTRAP = Object.freeze({ url: '', key: '' }); // Diisi otomatis pada file siap pakai hasil tombol admin.
       const STORAGE_KEY = 'catathutang_profesional_v1';
       const $ = (id) => document.getElementById(id);
       const form = $('debtForm');
@@ -654,6 +812,7 @@
       let cloudPin = '';
       let cloudConnected = false;
       let cloudSyncBusy = false;
+      let cloudSaveQueued = false;
       let cloudLocalDirty = false;
       let applyingCloudData = false;
       let cloudSaveTimer = null;
@@ -664,12 +823,12 @@
         try {
           const value = JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY) || '{}');
           return {
-            url: String(value.url || ''),
-            key: String(value.key || ''),
+            url: String(SUPABASE_BOOTSTRAP.url || value.url || ''),
+            key: String(SUPABASE_BOOTSTRAP.key || value.key || ''),
             accountId: String(value.accountId || '085182819967')
           };
         } catch (_) {
-          return { url: '', key: '', accountId: '085182819967' };
+          return { url: String(SUPABASE_BOOTSTRAP.url || ''), key: String(SUPABASE_BOOTSTRAP.key || ''), accountId: '085182819967' };
         }
       }
 
@@ -737,17 +896,29 @@
       // Bersihkan catatan lunas dari versi sebelumnya saat aplikasi dibuka.
       saveDebts();
 
-      const CLOUD_SETUP_SQL = `create schema if not exists extensions;
+      const CLOUD_SETUP_SQL = `-- CatatHutang Profesional: Supabase setup / upgrade SQL
+-- Aman dijalankan ulang. Mendukung hash SHA-256 versi lama lalu migrasi otomatis ke bcrypt saat PIN benar.
+
+create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
 
 create table if not exists public.debt_sync_store (
   account_id text primary key,
-  pin_salt text not null,
+  pin_salt text not null default '',
   pin_hash text not null,
+  pin_scheme text not null default 'sha256',
+  failed_attempts integer not null default 0,
+  locked_until timestamptz,
   payload jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now(),
   constraint debt_sync_payload_is_array check (jsonb_typeof(payload) = 'array')
 );
+
+-- Tambahkan kolom tanpa menghapus data pada instalasi versi sebelumnya.
+alter table public.debt_sync_store add column if not exists pin_scheme text not null default 'sha256';
+alter table public.debt_sync_store add column if not exists failed_attempts integer not null default 0;
+alter table public.debt_sync_store add column if not exists locked_until timestamptz;
+alter table public.debt_sync_store alter column pin_salt set default '';
 
 alter table public.debt_sync_store enable row level security;
 revoke all on table public.debt_sync_store from anon, authenticated;
@@ -761,18 +932,68 @@ set search_path = ''
 as $$
 declare
   v_row public.debt_sync_store%rowtype;
+  v_attempts integer;
+  v_matches boolean := false;
 begin
-  if p_account_id is null or pg_catalog.length(pg_catalog.btrim(p_account_id)) < 3 or p_pin is null or pg_catalog.length(p_pin) < 8 then
+  if p_account_id is null or pg_catalog.length(pg_catalog.btrim(p_account_id)) < 3
+     or p_pin is null or pg_catalog.length(p_pin) < 8 or pg_catalog.length(p_pin) > 128 then
     raise exception 'ID_DATABASE_ATAU_PIN_TIDAK_VALID';
   end if;
-  select * into v_row from public.debt_sync_store where account_id = p_account_id;
+
+  select * into v_row
+  from public.debt_sync_store
+  where account_id = pg_catalog.btrim(p_account_id)
+  for update;
+
   if not found then
-    return pg_catalog.jsonb_build_object('exists', false, 'data', '[]'::jsonb, 'updated_at', null);
+    return pg_catalog.jsonb_build_object('ok', true, 'exists', false, 'data', '[]'::jsonb, 'updated_at', null);
   end if;
-  if v_row.pin_hash <> pg_catalog.encode(extensions.digest(p_pin || v_row.pin_salt, 'sha256'), 'hex') then
-    raise exception 'PIN_DATABASE_SALAH';
+
+  if v_row.locked_until is not null and v_row.locked_until > pg_catalog.now() then
+    return pg_catalog.jsonb_build_object('ok', false, 'error', 'DATABASE_LOCKED', 'locked_until', v_row.locked_until);
   end if;
-  return pg_catalog.jsonb_build_object('exists', true, 'data', v_row.payload, 'updated_at', v_row.updated_at);
+
+  if v_row.locked_until is not null and v_row.locked_until <= pg_catalog.now() then
+    v_row.failed_attempts := 0;
+  end if;
+
+  if v_row.pin_scheme = 'bcrypt' then
+    v_matches := extensions.crypt(p_pin, v_row.pin_hash) = v_row.pin_hash;
+  else
+    -- Kompatibilitas dengan hash SHA-256 yang dipakai SQL versi sebelumnya.
+    v_matches := v_row.pin_hash = pg_catalog.encode(extensions.digest(p_pin || v_row.pin_salt, 'sha256'), 'hex');
+  end if;
+
+  if not v_matches then
+    v_attempts := v_row.failed_attempts + 1;
+    update public.debt_sync_store
+    set failed_attempts = v_attempts,
+        locked_until = case when v_attempts >= 5 then pg_catalog.now() + interval '15 minutes' else null end
+    where account_id = pg_catalog.btrim(p_account_id);
+    return pg_catalog.jsonb_build_object(
+      'ok', false,
+      'error', case when v_attempts >= 5 then 'DATABASE_LOCKED' else 'PIN_DATABASE_SALAH' end,
+      'remaining_attempts', greatest(0, 5 - v_attempts)
+    );
+  end if;
+
+  -- PIN benar: reset pembatasan dan migrasikan hash lama ke bcrypt.
+  if v_row.pin_scheme <> 'bcrypt' then
+    update public.debt_sync_store
+    set pin_hash = extensions.crypt(p_pin, extensions.gen_salt('bf', 12)),
+        pin_scheme = 'bcrypt',
+        pin_salt = '',
+        failed_attempts = 0,
+        locked_until = null
+    where account_id = pg_catalog.btrim(p_account_id);
+  else
+    update public.debt_sync_store
+    set failed_attempts = 0, locked_until = null
+    where account_id = pg_catalog.btrim(p_account_id)
+      and (failed_attempts <> 0 or locked_until is not null);
+  end if;
+
+  return pg_catalog.jsonb_build_object('ok', true, 'exists', true, 'data', v_row.payload, 'updated_at', v_row.updated_at);
 end;
 $$;
 
@@ -783,30 +1004,77 @@ security definer
 set search_path = ''
 as $$
 declare
-  v_hash text;
-  v_salt text;
+  v_row public.debt_sync_store%rowtype;
+  v_attempts integer;
+  v_matches boolean := false;
   v_time timestamptz;
 begin
-  if p_account_id is null or pg_catalog.length(pg_catalog.btrim(p_account_id)) < 3 or p_pin is null or pg_catalog.length(p_pin) < 8 then
+  if p_account_id is null or pg_catalog.length(pg_catalog.btrim(p_account_id)) < 3
+     or p_pin is null or pg_catalog.length(p_pin) < 8 or pg_catalog.length(p_pin) > 128 then
     raise exception 'ID_DATABASE_ATAU_PIN_TIDAK_VALID';
   end if;
   if p_payload is null or pg_catalog.jsonb_typeof(p_payload) <> 'array' then
     raise exception 'FORMAT_DATA_HARUS_ARRAY';
   end if;
-  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_account_id, 0));
-  select pin_hash, pin_salt into v_hash, v_salt from public.debt_sync_store where account_id = p_account_id for update;
-  if not found then
-    v_salt := pg_catalog.encode(extensions.gen_random_bytes(16), 'hex');
-    insert into public.debt_sync_store(account_id, pin_salt, pin_hash, payload, updated_at)
-    values (p_account_id, v_salt, pg_catalog.encode(extensions.digest(p_pin || v_salt, 'sha256'), 'hex'), p_payload, pg_catalog.now())
-    returning updated_at into v_time;
-  else
-    if v_hash <> pg_catalog.encode(extensions.digest(p_pin || v_salt, 'sha256'), 'hex') then
-      raise exception 'PIN_DATABASE_SALAH';
-    end if;
-    update public.debt_sync_store set payload = p_payload, updated_at = pg_catalog.now()
-      where account_id = p_account_id returning updated_at into v_time;
+  if pg_catalog.pg_column_size(p_payload) > 2000000 then
+    raise exception 'UKURAN_DATA_TERLALU_BESAR';
   end if;
+
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(pg_catalog.btrim(p_account_id), 0));
+  select * into v_row
+  from public.debt_sync_store
+  where account_id = pg_catalog.btrim(p_account_id)
+  for update;
+
+  if not found then
+    insert into public.debt_sync_store(account_id, pin_salt, pin_hash, pin_scheme, failed_attempts, payload, updated_at)
+    values (
+      pg_catalog.btrim(p_account_id),
+      '',
+      extensions.crypt(p_pin, extensions.gen_salt('bf', 12)),
+      'bcrypt',
+      0,
+      p_payload,
+      pg_catalog.now()
+    )
+    returning updated_at into v_time;
+    return pg_catalog.jsonb_build_object('ok', true, 'updated_at', v_time);
+  end if;
+
+  if v_row.locked_until is not null and v_row.locked_until > pg_catalog.now() then
+    return pg_catalog.jsonb_build_object('ok', false, 'error', 'DATABASE_LOCKED', 'locked_until', v_row.locked_until);
+  end if;
+
+  if v_row.pin_scheme = 'bcrypt' then
+    v_matches := extensions.crypt(p_pin, v_row.pin_hash) = v_row.pin_hash;
+  else
+    v_matches := v_row.pin_hash = pg_catalog.encode(extensions.digest(p_pin || v_row.pin_salt, 'sha256'), 'hex');
+  end if;
+
+  if not v_matches then
+    v_attempts := case when v_row.locked_until is not null and v_row.locked_until <= pg_catalog.now() then 1 else v_row.failed_attempts + 1 end;
+    update public.debt_sync_store
+    set failed_attempts = v_attempts,
+        locked_until = case when v_attempts >= 5 then pg_catalog.now() + interval '15 minutes' else null end
+    where account_id = pg_catalog.btrim(p_account_id);
+    return pg_catalog.jsonb_build_object(
+      'ok', false,
+      'error', case when v_attempts >= 5 then 'DATABASE_LOCKED' else 'PIN_DATABASE_SALAH' end,
+      'remaining_attempts', greatest(0, 5 - v_attempts)
+    );
+  end if;
+
+  update public.debt_sync_store
+  set payload = p_payload,
+      pin_hash = case when v_row.pin_scheme = 'bcrypt' then v_row.pin_hash else extensions.crypt(p_pin, extensions.gen_salt('bf', 12)) end,
+      pin_scheme = 'bcrypt',
+      pin_salt = '',
+      failed_attempts = 0,
+      locked_until = null,
+      updated_at = pg_catalog.now()
+  where account_id = pg_catalog.btrim(p_account_id)
+  returning updated_at into v_time;
+
   return pg_catalog.jsonb_build_object('ok', true, 'updated_at', v_time);
 end;
 $$;
@@ -814,7 +1082,9 @@ $$;
 revoke all on function public.debt_get(text, text) from public;
 revoke all on function public.debt_save(text, text, jsonb) from public;
 grant execute on function public.debt_get(text, text) to anon, authenticated;
-grant execute on function public.debt_save(text, text, jsonb) to anon, authenticated;`;
+grant execute on function public.debt_save(text, text, jsonb) to anon, authenticated;
+
+-- Data hanya dapat dibaca/ditulis melalui fungsi RPC yang memeriksa PIN.`;
 
       function setCloudStatus(message, state = 'local') {
         const status = $('cloudStatus');
@@ -855,6 +1125,11 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
           const message = result && typeof result === 'object' ? (result.message || result.details || result.hint || JSON.stringify(result)) : String(result || response.statusText);
           throw new Error(message || `HTTP ${response.status}`);
         }
+        if (result && typeof result === 'object' && result.ok === false) {
+          const reason = result.error || 'DATABASE_REQUEST_FAILED';
+          const remaining = Number(result.remaining_attempts);
+          throw new Error(reason + (Number.isFinite(remaining) ? ` · sisa percobaan ${remaining}` : ''));
+        }
         return result;
       }
 
@@ -887,7 +1162,8 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
       }
 
       async function saveCloudNow() {
-        if (!cloudConnected || !cloudPin || cloudSyncBusy) return false;
+        if (!cloudConnected || !cloudPin) return false;
+        if (cloudSyncBusy) { cloudSaveQueued = true; return false; }
         cloudSyncBusy = true;
         try {
           const result = await cloudRpc('debt_save', {
@@ -906,6 +1182,10 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
           return false;
         } finally {
           cloudSyncBusy = false;
+          if (cloudSaveQueued) {
+            cloudSaveQueued = false;
+            scheduleCloudSave();
+          }
         }
       }
 
@@ -965,39 +1245,33 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
       }
 
       async function connectCloud() {
-        const url = cleanCloudUrl($('supabaseUrl').value);
-        const key = $('supabaseKey').value.trim();
+        const url = cleanCloudUrl($('supabaseUrl').value || cloudConfig.url || SUPABASE_BOOTSTRAP.url);
+        const key = String($('supabaseKey').value || cloudConfig.key || SUPABASE_BOOTSTRAP.key).trim();
         const accountId = $('cloudAccount').value.trim();
         const pin = $('cloudPin').value;
-        if (!/^https:\/\//i.test(url)) return showToast('Masukkan URL Project Supabase yang diawali https://.');
-        if (!key || key.length < 20) return showToast('Masukkan Publishable key atau anon public key Supabase.');
+        if (!/^https:\/\//i.test(url)) {
+          $('cloudSettings').open = true;
+          return showToast('Pengaturan awal belum lengkap. Isi Project URL di menu Pengaturan awal aplikasi.');
+        }
+        if (!key || key.length < 20) {
+          $('cloudSettings').open = true;
+          return showToast('Publishable Key belum diatur. Buka Pengaturan awal aplikasi.');
+        }
         if (accountId.length < 3) return showToast('ID database minimal 3 karakter.');
-        if (pin.length < 8) return showToast('PIN database minimal 8 karakter.');
+        if (pin.length < 8) return showToast('PIN minimal 8 karakter untuk keamanan.');
 
         cloudConfig = { url, key, accountId };
         if (!saveCloudConfig()) return;
         cloudPin = pin;
-        setCloudStatus('Menghubungkan...', 'local');
+        setCloudStatus('Sedang memulihkan data...', 'local');
         $('connectCloud').disabled = true;
         try {
           const snapshot = await getCloudSnapshot();
           if (snapshot && snapshot.exists === true) {
-            const remote = normalizeCloudDebts(snapshot.data);
-            const same = JSON.stringify(remote) === JSON.stringify(debts);
-            if (!same && debts.length > 0) {
-              const chooseCloud = confirm(`Database cloud sudah berisi ${remote.length} catatan.\n\nPilih OK untuk memakai data cloud (disarankan agar HP mengikuti database utama).\nPilih Batal untuk mengganti isi cloud dengan ${debts.length} catatan lokal di HP ini.`);
-              if (chooseCloud) {
-                await applyCloudSnapshot(snapshot, false);
-              } else {
-                cloudConnected = true;
-                cloudLocalDirty = true;
-                const saved = await saveCloudNow();
-                if (!saved) throw new Error('Data lokal belum berhasil dikirim ke cloud.');
-              }
-            } else {
-              await applyCloudSnapshot(snapshot, false);
-            }
+            // Cloud menjadi sumber utama. Data lokal HP baru tidak menimpa database utama.
+            await applyCloudSnapshot(snapshot, false);
           } else {
+            // Akun cloud belum dibuat: inisialisasi dengan data lokal HP pertama.
             cloudConnected = true;
             cloudLocalDirty = true;
             const saved = await saveCloudNow();
@@ -1008,18 +1282,22 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
           $('disconnectCloud').disabled = false;
           $('cloudPin').value = '';
           $('cloudSettings').open = false;
-          setCloudStatus('Terhubung · sinkron otomatis aktif', 'connected');
+          setCloudStatus('Tersinkron · otomatis', 'connected');
           startCloudPolling();
-          showToast('Database berhasil dihubungkan. HP lain dapat memakai ID dan PIN yang sama.');
+          showToast(`${debts.length} catatan berhasil dipulihkan. Sinkronisasi otomatis aktif.`);
         } catch (error) {
           cloudConnected = false;
           cloudPin = '';
           $('refreshCloud').disabled = true;
           $('disconnectCloud').disabled = true;
-          setCloudStatus('Belum terhubung · periksa pengaturan', 'error');
+          setCloudStatus('Gagal masuk · periksa ID/PIN', 'error');
           const raw = error && error.message ? error.message : 'Kesalahan tidak diketahui';
-          const hint = /PIN_DATABASE_SALAH/i.test(raw) ? 'PIN database salah.' : /debt_get|debt_save|function|schema cache/i.test(raw) ? 'SQL setup belum dijalankan atau nama fungsi belum tersedia.' : raw;
-          showToast('Koneksi gagal: ' + hint.slice(0, 150));
+          let hint = raw;
+          if (/PIN_DATABASE_SALAH/i.test(raw)) hint = 'PIN database salah.';
+          else if (/DATABASE_LOCKED/i.test(raw)) hint = 'Akun terkunci sementara karena terlalu banyak PIN salah. Coba lagi setelah 15 menit.';
+          else if (/debt_get|debt_save|function|schema cache/i.test(raw)) hint = 'SQL Supabase belum dijalankan atau fungsi belum tersedia.';
+          else if (/Failed to fetch|NetworkError/i.test(raw)) hint = 'Tidak dapat menghubungi Supabase. Periksa internet dan Project URL.';
+          showToast('Gagal masuk: ' + hint.slice(0, 150));
           console.error('Cloud connect error:', error);
         } finally {
           $('connectCloud').disabled = false;
@@ -1034,16 +1312,56 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
         clearInterval(cloudPollTimer);
         $('refreshCloud').disabled = true;
         $('disconnectCloud').disabled = true;
-        setCloudStatus('Mode lokal · cloud terputus', 'local');
+        setCloudStatus('Keluar · data lokal tersedia', 'local');
         showToast('Koneksi cloud diputus. Data lokal tetap tersimpan.');
+      }
+
+      function saveCloudSetupFromInputs() {
+        const url = cleanCloudUrl($('supabaseUrl').value);
+        const key = $('supabaseKey').value.trim();
+        if (!/^https:\/\//i.test(url)) return showToast('Project URL harus diawali https://.');
+        if (key.length < 20) return showToast('Masukkan Publishable Key / anon public key yang benar.');
+        cloudConfig = { url, key, accountId: $('cloudAccount').value.trim() || '085182819967' };
+        if (!saveCloudConfig()) return;
+        $('supabaseUrl').value = url;
+        $('supabaseKey').value = key;
+        setCloudStatus('Pengaturan tersimpan di HP ini', 'local');
+        showToast('Pengaturan tersimpan. Buat file HTML siap pakai agar HP lain cukup ID dan PIN.');
+      }
+
+      function buildConfiguredHtml() {
+        const url = cleanCloudUrl($('supabaseUrl').value || cloudConfig.url);
+        const key = String($('supabaseKey').value || cloudConfig.key).trim();
+        if (!/^https:\/\//i.test(url) || key.length < 20) {
+          return showToast('Isi Project URL dan Publishable Key terlebih dahulu.');
+        }
+        const source = '<!doctype html>\n' + document.documentElement.outerHTML;
+        const declarationStart = source.indexOf('const SUPABASE_BOOTSTRAP = Object.freeze(');
+        const declarationEnd = declarationStart >= 0 ? source.indexOf(';', declarationStart) : -1;
+        if (declarationStart < 0 || declarationEnd < 0) return showToast('Template file tidak ditemukan. Unduh ulang versi aplikasi terbaru.');
+        const replacement = `const SUPABASE_BOOTSTRAP = Object.freeze(${JSON.stringify({ url, key })}); // Konfigurasi publik Supabase untuk semua perangkat.`;
+        const configuredSource = source.slice(0, declarationStart) + replacement + source.slice(declarationEnd + 1);
+        const blob = new Blob([configuredSource], { type: 'text/html;charset=utf-8' });
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = 'catat-hutang-profesional-siap-pakai.html';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 1500);
+        showToast('File HTML siap pakai dibuat. Unggah file ini ke hosting utama.');
       }
 
       $('connectCloud').addEventListener('click', connectCloud);
       $('refreshCloud').addEventListener('click', () => refreshCloud(false, true));
       $('disconnectCloud').addEventListener('click', disconnectCloud);
       $('copySetupSql').addEventListener('click', () => copyText(CLOUD_SETUP_SQL));
+      $('saveCloudSetup').addEventListener('click', saveCloudSetupFromInputs);
+      $('buildConfiguredHtml').addEventListener('click', buildConfiguredHtml);
       fillCloudSettings();
-      setCloudStatus(cloudConfig.url && cloudConfig.key ? 'Pengaturan tersimpan · masukkan PIN untuk masuk' : 'Mode lokal · database belum dihubungkan', 'local');
+      if (!cloudConfig.url || !cloudConfig.key) $('cloudSettings').open = true;
+      setCloudStatus(cloudConfig.url && cloudConfig.key ? 'Siap · masukkan ID dan PIN' : 'Setup admin diperlukan sekali', 'local');
       window.addEventListener('online', () => {
         if (cloudConnected && cloudLocalDirty) scheduleCloudSave();
         else if (cloudConnected) refreshCloud(true, false);
