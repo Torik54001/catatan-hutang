@@ -13,6 +13,20 @@ function json(status: number, body: Record<string, unknown>) {
   });
 }
 
+function readKeyMap(name: string): Record<string, string> {
+  const raw = Deno.env.get(name);
+  if (!raw) return {};
+  try {
+    const value = JSON.parse(raw);
+    return value && typeof value === 'object' && !Array.isArray(value)
+      ? value as Record<string, string>
+      : {};
+  } catch {
+    console.error(`Environment ${name} bukan JSON yang valid.`);
+    return {};
+  }
+}
+
 function accountEmail(accountId: string) {
   // Email virtual internal untuk Supabase Auth; tidak digunakan untuk mengirim email.
   return `acct-${accountId}@catathutang-login.com`;
@@ -24,15 +38,21 @@ Deno.serve(async (request: Request) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const secretKeyMap = JSON.parse(Deno.env.get('SUPABASE_SECRET_KEYS') ?? '{}');
-    const publishableKeyMap = JSON.parse(Deno.env.get('SUPABASE_PUBLISHABLE_KEYS') ?? '{}');
-    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? secretKeyMap.default ?? Object.values(secretKeyMap)[0];
-    const anonKey = request.headers.get('apikey') ?? Deno.env.get('SUPABASE_ANON_KEY') ?? publishableKeyMap.default ?? Object.values(publishableKeyMap)[0];
+    const secretKeyMap = readKeyMap('SUPABASE_SECRET_KEYS');
+    const publishableKeyMap = readKeyMap('SUPABASE_PUBLISHABLE_KEYS');
+    const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || secretKeyMap.default || Object.values(secretKeyMap)[0];
+    const anonKey = request.headers.get('apikey') || Deno.env.get('SUPABASE_ANON_KEY') || publishableKeyMap.default || Object.values(publishableKeyMap)[0];
     const bootstrapAccountId = Deno.env.get('CATATAN_BOOTSTRAP_ACCOUNT_ID') ?? '';
     const bootstrapPin = Deno.env.get('CATATAN_BOOTSTRAP_PIN') ?? '';
 
     if (!supabaseUrl || !serviceKey || !anonKey) {
-      return json(500, { error: 'Konfigurasi fungsi Supabase belum lengkap.' });
+      console.error('Missing Supabase runtime configuration:', {
+        url: Boolean(supabaseUrl), adminKey: Boolean(serviceKey), publicKey: Boolean(anonKey),
+      });
+      return json(500, { error: 'Konfigurasi layanan Supabase belum lengkap. Periksa Secrets bawaan proyek.' });
+    }
+    if (!/^\d{8,16}$/.test(bootstrapAccountId) || bootstrapPin.length < 6) {
+      return json(500, { error: 'Konfigurasi akun awal belum lengkap di Supabase Function Secrets.' });
     }
 
     const body = await request.json().catch(() => ({}));
