@@ -765,7 +765,7 @@
               <input id="phoneNumber" name="phoneNumber" type="tel" maxlength="22" inputmode="tel" placeholder="Contoh: 081234567890" autocomplete="tel">
               <button class="get-contact-button" id="getContactButton" type="button">♙ Get Kontak</button>
             </div>
-            <div class="hint">Opsional. Get Kontak mengambil nama dan nomor dari kontak HP jika browser mendukung.</div>
+            <div class="hint">Jika nomor sudah terdaftar, HP akan bergetar dan barang baru otomatis digabung ke catatan pelanggan yang sama.</div>
           </div>
           <div class="field" id="initialPaymentField">
             <label for="initialPayment">Pembayaran awal (opsional)</label>
@@ -1572,9 +1572,18 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
         if (!Number.isSafeInteger(initialPayment) || initialPayment < 0 || initialPayment > amount) return showToast('Pembayaran awal tidak boleh melebihi hutang.');
         if (!editingId && initialPayment === amount) return showToast('Pembayaran awal sudah melunasi seluruh hutang. Tidak ada catatan aktif yang perlu disimpan.');
 
+        const normalizedPhone = normalizePhone(phone);
+        const duplicateCustomer = normalizedPhone
+          ? debts.find(entry => normalizePhone(entry.phone) === normalizedPhone && entry.id !== editingId)
+          : null;
+
         if (editingId) {
           const item = debts.find(entry => entry.id === editingId);
           if (!item) return resetForm();
+          if (duplicateCustomer) {
+            if (navigator.vibrate) navigator.vibrate([180, 70, 180]);
+            return showToast(`Nomor ini sudah terdaftar atas nama ${duplicateCustomer.name}. Ubah nomor atau batalkan edit agar catatan tidak tercampur.`);
+          }
           if (amount <= totalPaid(item)) return showToast('Nominal hutang harus lebih besar dari total pembayaran yang sudah diterima.');
           item.name = name;
           item.description = description;
@@ -1585,9 +1594,22 @@ grant execute on function public.debt_save(text, text, jsonb) to anon, authentic
           showToast('Catatan berhasil diperbarui.');
         } else {
           const now = new Date().toISOString();
-          const payments = initialPayment > 0 ? [{ amount: initialPayment, date: now }] : [];
-          debts.push({ id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)), name, description, items, phone, amount, payments, createdAt: now, updatedAt: now });
-          showToast('Catatan hutang berhasil disimpan.');
+          const newPayments = initialPayment > 0 ? [{ amount: initialPayment, date: now }] : [];
+          if (duplicateCustomer) {
+            // Nomor yang sama dianggap pelanggan yang sama: gabungkan barang dan pembayaran.
+            if (navigator.vibrate) navigator.vibrate([180, 70, 180]);
+            duplicateCustomer.items = normalizeItemLines([...(duplicateCustomer.items || []), ...items], '', 0);
+            duplicateCustomer.amount = duplicateCustomer.items.reduce((sum, line) => sum + line.amount, 0);
+            duplicateCustomer.description = duplicateCustomer.items.map(line => line.name).join(' · ');
+            if (!duplicateCustomer.name && name) duplicateCustomer.name = name;
+            if (!duplicateCustomer.phone && phone) duplicateCustomer.phone = phone;
+            duplicateCustomer.payments = [...(duplicateCustomer.payments || []), ...newPayments];
+            duplicateCustomer.updatedAt = now;
+            showToast(`Nomor sudah terdaftar. ${items.length} barang berhasil digabung ke catatan ${duplicateCustomer.name}.`);
+          } else {
+            debts.push({ id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)), name, description, items, phone, amount, payments: newPayments, createdAt: now, updatedAt: now });
+            showToast('Catatan pelanggan baru berhasil disimpan.');
+          }
         }
         if (saveDebts()) {
           resetForm();
