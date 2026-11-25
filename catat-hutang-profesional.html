@@ -1,0 +1,1422 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10243a">
+  <title>CatatHutang — Catatan Hutang</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172b3d;
+      --muted: #728294;
+      --line: #e5ebf0;
+      --paper: #ffffff;
+      --page: #f3f6f9;
+      --navy: #10243a;
+      --teal: #087f78;
+      --teal-dark: #066a64;
+      --teal-soft: #e8f6f4;
+      --red: #b94848;
+      --red-soft: #fff0ef;
+      --green: #16845d;
+      --green-soft: #e9f7f0;
+      --shadow: 0 12px 34px rgba(24, 45, 66, .06);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--page); color: var(--ink); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .topbar { background: var(--navy); color: #fff; padding: 18px 22px; }
+    .topbar-inner { max-width: 1160px; margin: auto; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 750; letter-spacing: -.3px; font-size: 18px; }
+    .brand-mark { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 11px; background: #1b968e; color: white; font-size: 19px; }
+    .local-badge { font-size: 12px; color: #c8d7e4; display: flex; align-items: center; gap: 7px; }
+    .local-dot { width: 7px; height: 7px; background: #5cdbad; border-radius: 50%; }
+    main { width: min(1160px, calc(100% - 32px)); margin: 28px auto 48px; }
+    .intro { margin: 0 0 20px; }
+    .intro h1 { margin: 0 0 6px; font-size: clamp(23px, 3vw, 29px); letter-spacing: -.8px; }
+    .intro p { margin: 0; color: var(--muted); font-size: 14px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+    .stat { background: var(--paper); border: 1px solid var(--line); border-radius: 15px; padding: 17px 18px; box-shadow: var(--shadow); min-width: 0; }
+    .stat-label { color: var(--muted); font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+    .stat-value { font-size: clamp(17px, 2vw, 22px); font-weight: 780; letter-spacing: -.45px; overflow-wrap: anywhere; }
+    .stat-note { font-size: 11px; color: var(--muted); margin-top: 5px; }
+    .workspace { display: grid; grid-template-columns: 345px minmax(0, 1fr); align-items: start; gap: 18px; }
+    .panel { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); }
+    .panel-head { padding: 19px 20px 14px; border-bottom: 1px solid var(--line); }
+    .panel-head h2 { margin: 0; font-size: 16px; letter-spacing: -.2px; }
+    .panel-head p { margin: 5px 0 0; font-size: 12px; color: var(--muted); }
+    .form-body { padding: 18px 20px 20px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; font-weight: 700; margin-bottom: 7px; color: #425669; }
+    .field input { width: 100%; min-height: 43px; border: 1px solid #dce4eb; border-radius: 10px; padding: 10px 12px; color: var(--ink); background: #fff; outline: none; transition: border .15s, box-shadow .15s; }
+    .field input:focus, .searchbox:focus-within, .filter:focus { border-color: #54aaa4; box-shadow: 0 0 0 3px rgba(8,127,120,.10); }
+    .field input::placeholder { color: #a0acb8; }
+    .field .hint { font-size: 11px; color: var(--muted); margin-top: 6px; }
+    .money-input { position: relative; }
+    .money-input span { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #728294; font-size: 13px; font-weight: 650; }
+    .money-input input { padding-left: 43px; }
+    .form-actions { display: flex; gap: 8px; margin-top: 18px; }
+    .btn { border: 0; border-radius: 10px; padding: 11px 14px; font-size: 13px; font-weight: 700; transition: .15s; }
+    .btn-primary { background: var(--teal); color: white; flex: 1; }
+    .btn-primary:hover { background: var(--teal-dark); }
+    .btn-light { background: #eef2f5; color: #4e6172; }
+    .btn-light:hover { background: #e4eaef; }
+    .list-panel { min-height: 420px; }
+    .list-toolbar { padding: 15px 18px; display: flex; gap: 9px; border-bottom: 1px solid var(--line); }
+    .searchbox { display: flex; align-items: center; gap: 8px; border: 1px solid #dce4eb; border-radius: 10px; padding: 0 11px; flex: 1; min-width: 0; background: white; }
+    .searchbox span { color: #8090a0; font-size: 17px; }
+    .searchbox input { border: 0; outline: 0; width: 100%; min-width: 0; height: 40px; color: var(--ink); background: transparent; font-size: 13px; }
+    .status-tabs { display: flex; gap: 7px; align-items: center; }
+    .status-tab { border: 1px solid #dce4eb; border-radius: 10px; background: #fff; color: #53677a; padding: 9px 12px; font-size: 12px; font-weight: 750; white-space: nowrap; transition: .15s; }
+    .status-tab.active { background: var(--navy); border-color: var(--navy); color: #fff; }
+    .status-tab-count { display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px; margin-left: 5px; border-radius: 20px; background: rgba(116, 134, 151, .13); font-size: 10px; }
+    .status-tab.active .status-tab-count { background: rgba(255,255,255,.17); }
+    .records { padding: 5px 16px 15px; }
+    .record { border-bottom: 1px solid var(--line); padding: 17px 3px; opacity: 1; transform: translateX(0); max-height: 520px; overflow: hidden; transition: opacity .24s ease, transform .24s ease, max-height .24s ease, padding .24s ease; }
+    .record.is-leaving { opacity: 0; transform: translateX(18px); max-height: 0; padding-top: 0; padding-bottom: 0; border-bottom-color: transparent; }
+    .record:last-child { border-bottom: 0; }
+    .record-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .record-name { font-size: 15px; font-weight: 760; letter-spacing: -.2px; overflow-wrap: anywhere; }
+    .record-desc { color: #718294; font-size: 12px; margin-top: 4px; overflow-wrap: anywhere; }
+    .status { flex: 0 0 auto; border-radius: 20px; padding: 5px 9px; font-size: 10px; font-weight: 750; }
+    .status-open { background: var(--red-soft); color: var(--red); }
+    .status-paid { background: var(--green-soft); color: var(--green); }
+    .record-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 15px 0 13px; }
+    .detail-label { color: #8a98a6; font-size: 10px; margin-bottom: 4px; }
+    .detail-value { color: #425568; font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
+    .detail-value.remaining { color: var(--red); }
+    .detail-value.settled { color: var(--green); }
+    .record-meta { color: #94a0ab; font-size: 10px; margin-top: 10px; }
+    .record-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    .action { border: 1px solid #dfe6eb; background: #fff; color: #53677a; border-radius: 8px; padding: 7px 10px; font-size: 11px; font-weight: 700; }
+    .action:hover { background: #f5f8fa; }
+    .action.remind { background: var(--teal-soft); color: var(--teal-dark); border-color: #d5eeeb; }
+    .action.complete { background: var(--green-soft); color: #13734f; border-color: #ccebdd; }
+    .action.complete:hover { background: #d9f2e6; }
+    .action.danger { color: #b34d4d; }
+    .payment-box { margin-top: 12px; padding: 13px; border: 1px solid #dcebe8; background: #f7fbfa; border-radius: 11px; }
+    .payment-box label { display: block; color: #4a6570; font-size: 11px; font-weight: 700; margin-bottom: 7px; }
+    .payment-row { display: flex; gap: 8px; }
+    .payment-row input { width: 100%; min-width: 0; border: 1px solid #d7e2e4; border-radius: 8px; padding: 9px 10px; outline: none; }
+    .payment-row .btn { padding: 9px 12px; white-space: nowrap; }
+    .empty { text-align: center; padding: 54px 20px; color: var(--muted); }
+    .empty-icon { margin: 0 auto 12px; width: 47px; height: 47px; border-radius: 14px; display: grid; place-items: center; background: #eef4f6; color: #718d99; font-size: 22px; }
+    .empty strong { display: block; color: #41576a; font-size: 14px; margin-bottom: 5px; }
+    .empty span { font-size: 12px; }
+    .footer-note { color: #91a0ad; font-size: 11px; text-align: center; margin: 20px 0 0; }
+    .toast { position: fixed; bottom: 22px; left: 50%; transform: translate(-50%, 15px); background: #172f43; color: white; padding: 11px 16px; border-radius: 10px; font-size: 12px; box-shadow: 0 8px 26px rgba(0,0,0,.18); opacity: 0; pointer-events: none; transition: .2s; z-index: 10; max-width: calc(100% - 32px); text-align: center; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 820px) {
+      main { width: min(100% - 24px, 620px); margin-top: 21px; }
+      .workspace { grid-template-columns: 1fr; }
+      .stats { gap: 9px; }
+      .stat { padding: 14px 12px; border-radius: 12px; }
+      .stat-label { font-size: 10px; }
+      .stat-value { font-size: 16px; }
+      .stat-note { font-size: 10px; }
+    }
+    @media (max-width: 480px) {
+      .topbar { padding: 14px 15px; }
+      .brand { font-size: 16px; }
+      .local-badge { font-size: 10px; }
+      main { width: calc(100% - 20px); }
+      .list-toolbar { padding: 12px; flex-wrap: wrap; }
+      .searchbox { flex-basis: 100%; }
+      .status-tabs { width: 100%; }
+      .status-tab { flex: 1; padding: 9px 8px; }
+      .records { padding-left: 12px; padding-right: 12px; }
+      .record-details { gap: 6px; }
+      .detail-value { font-size: 11px; }
+      .action { padding: 7px 8px; }
+    }
+
+    /* Tampilan aplikasi: desktop lega, mobile nyaman disentuh */
+    :root { --page:#f4f7fb; --navy:#102b46; --teal:#087f78; }
+    body { min-height:100vh; -webkit-tap-highlight-color:transparent; }
+    .topbar { position:sticky; top:0; z-index:20; padding:15px 24px; box-shadow:0 3px 18px rgba(16,43,70,.12); }
+    .brand-mark { width:42px; height:42px; border-radius:14px; }
+    main { width:min(1320px, calc(100% - 48px)); margin:34px auto 56px; }
+    .intro { margin-bottom:25px; }
+    .intro h1 { font-size:clamp(28px,3vw,36px); }
+    .intro p { font-size:15px; }
+    .stats { gap:18px; margin-bottom:24px; }
+    .stat { border-radius:19px; padding:22px 23px; }
+    .stat-label { font-size:12px; letter-spacing:.35px; }
+    .stat-value { font-size:clamp(21px,2.2vw,27px); }
+    .workspace { grid-template-columns:minmax(330px,390px) minmax(0,1fr); gap:22px; }
+    .panel { border-radius:20px; box-shadow:0 8px 28px rgba(24,45,66,.055); }
+    .panel-head { padding:23px 24px 17px; }
+    .panel-head h2 { font-size:18px; }
+    .panel-head p { font-size:13px; }
+    .form-body { padding:22px 24px 25px; }
+    .field { margin-bottom:17px; }
+    .field label { font-size:13px; }
+    .field input { min-height:49px; border-radius:12px; font-size:15px; padding:12px 14px; }
+    .money-input input { padding-left:44px; }
+    .btn { min-height:46px; border-radius:12px; font-size:14px; padding:12px 16px; }
+    .list-toolbar { padding:18px 22px; gap:12px; }
+    .searchbox input { height:47px; font-size:14px; }
+    .status-tab { min-height:43px; padding:10px 15px; font-size:13px; }
+    .records { padding:7px 22px 20px; }
+    .record { padding:21px 4px; }
+    .record-name { font-size:17px; }
+    .record-desc { font-size:13px; }
+    .status { font-size:11px; padding:7px 11px; }
+    .record-details { gap:14px; margin:18px 0 16px; }
+    .detail-label { font-size:11px; }
+    .detail-value { font-size:14px; }
+    .record-meta { font-size:11px; }
+    .action { min-height:39px; padding:9px 12px; font-size:12px; border-radius:10px; }
+    .payment-box { padding:15px; border-radius:13px; }
+    .payment-row input { min-height:43px; font-size:14px; }
+    .empty { padding:65px 20px; }
+    @media (max-width:820px) {
+      main { width:min(100% - 32px, 680px); margin:25px auto 42px; }
+      .workspace { grid-template-columns:1fr; gap:16px; }
+      .stats { gap:10px; }
+      .stat { padding:17px 14px; }
+    }
+    @media (max-width:560px) {
+      body { background:#f3f6fa; }
+      .topbar { padding:11px 15px; }
+      .topbar-inner { gap:8px; }
+      .brand { font-size:17px; }
+      .brand-mark { width:39px; height:39px; }
+      .local-badge { font-size:10px; white-space:nowrap; }
+      main { width:calc(100% - 22px); margin:19px auto 34px; }
+      .intro { margin:0 2px 17px; }
+      .intro h1 { font-size:27px; margin-bottom:4px; }
+      .intro p { font-size:13px; line-height:1.45; }
+      .stats { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin-bottom:15px; }
+      .stat { padding:14px 13px; border-radius:15px; box-shadow:0 3px 12px rgba(24,45,66,.04); }
+      .stat:first-child { grid-column:1 / -1; }
+      .stat-label { font-size:10px; margin-bottom:6px; }
+      .stat-value { font-size:20px; }
+      .stat-note { font-size:10px; }
+      .panel { border-radius:17px; }
+      .panel-head { padding:17px 17px 13px; }
+      .panel-head h2 { font-size:17px; }
+      .panel-head p { font-size:12px; }
+      .form-body { padding:17px; }
+      .field { margin-bottom:14px; }
+      .field label { font-size:12px; margin-bottom:7px; }
+      .field input { min-height:51px; font-size:16px; border-radius:12px; }
+      .field .hint { font-size:11px; }
+      .form-actions { gap:9px; }
+      .btn { min-height:49px; font-size:14px; }
+      .list-toolbar { padding:13px; flex-wrap:wrap; gap:10px; }
+      .searchbox { flex-basis:100%; border-radius:12px; padding:0 12px; }
+      .searchbox input { height:48px; font-size:15px; }
+      .status-tabs { width:100%; gap:8px; }
+      .status-tab { flex:1; min-height:45px; padding:9px 6px; font-size:12px; border-radius:11px; }
+      .records { padding:3px 15px 13px; }
+      .record { padding:18px 1px; }
+      .record-name { font-size:16px; }
+      .record-desc { font-size:12px; line-height:1.4; }
+      .status { font-size:10px; padding:6px 8px; }
+      .record-details { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 10px; margin:15px 0; }
+      .detail-label { font-size:10px; }
+      .detail-value { font-size:13px; }
+      .record-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+      .action { min-height:43px; padding:9px 7px; font-size:11px; border-radius:10px; }
+      .action.complete, .action.remind { grid-column:span 1; }
+      .payment-box { padding:12px; }
+      .payment-row { flex-direction:column; }
+      .payment-row input, .payment-row .btn { min-height:45px; width:100%; }
+      .empty { padding:45px 16px; }
+      .footer-note { font-size:10px; line-height:1.5; padding:0 12px; }
+      .toast { bottom:calc(16px + env(safe-area-inset-bottom)); width:max-content; max-width:calc(100% - 28px); font-size:13px; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; transition-duration:.01ms !important; }
+    }
+
+
+    /* Tabel hutang profesional: kolom ringkas di desktop, kartu rapi di mobile */
+    .records { padding: 0; }
+    .table-wrap { width:100%; overflow-x:auto; }
+    .debt-table { width:100%; border-collapse:separate; border-spacing:0; table-layout:fixed; }
+    .debt-table th { background:#f7f9fb; color:#718294; text-align:left; font-size:10px; font-weight:800; letter-spacing:.45px; text-transform:uppercase; padding:13px 10px; border-bottom:1px solid var(--line); }
+    .debt-table th:first-child { padding-left:20px; width:25%; }
+    .debt-table th:nth-child(2), .debt-table th:nth-child(3), .debt-table th:nth-child(4) { width:14%; }
+    .debt-table th:nth-child(5) { width:13%; }
+    .debt-table th:last-child { width:20%; padding-right:16px; }
+    .debt-table td { vertical-align:middle; padding:15px 10px; border-bottom:1px solid #edf1f4; color:#344b60; font-size:12px; overflow-wrap:anywhere; }
+    .debt-table td:first-child { padding-left:20px; }
+    .debt-table td:last-child { padding-right:16px; }
+    .debt-table tbody tr:last-child td { border-bottom:0; }
+    .debt-table .record-name { font-size:13px; line-height:1.35; font-weight:800; color:#21384c; }
+    .debt-table .record-desc { margin-top:3px; font-size:11px; color:#7d8c99; line-height:1.35; }
+    .record-phone { margin-top:5px; color:#91a0ad; font-size:10px; }
+    .table-value { font-size:11px; font-weight:750; color:#425568; white-space:nowrap; }
+    .table-value.remaining { color:var(--red); }
+    .table-value.settled { color:var(--green); }
+    .debt-table .status { display:inline-flex; white-space:nowrap; font-size:9px; padding:6px 8px; }
+    .mobile-label { display:none; }
+    .debt-table .record-actions { display:flex; flex-wrap:wrap; gap:5px; }
+    .debt-table .action { min-height:29px; padding:6px 7px; border-radius:7px; font-size:10px; }
+    .debt-table .record-meta { margin-top:6px; font-size:9px; line-height:1.3; }
+    .payment-detail-row td { padding:0 16px 13px !important; background:#fbfdfd; }
+    .payment-detail-row .payment-box { margin:0; display:flex; align-items:center; justify-content:space-between; gap:14px; }
+    .payment-detail-row .payment-box label { margin:0; }
+    .payment-detail-row .payment-row { max-width:390px; flex:1; }
+    .debt-row { transition:opacity .22s ease, transform .22s ease; }
+    .debt-row.is-leaving { opacity:0; transform:translateX(15px); }
+    @media (max-width:1100px) and (min-width:821px) {
+      .debt-table th { padding-left:7px; padding-right:7px; font-size:9px; }
+      .debt-table td { padding:12px 7px; }
+      .debt-table th:first-child, .debt-table td:first-child { padding-left:13px; }
+      .debt-table th:last-child, .debt-table td:last-child { padding-right:10px; }
+      .debt-table .action { font-size:9px; padding:5px 6px; }
+    }
+    @media (max-width:820px) {
+      .records { padding:10px 12px 14px; }
+      .table-wrap { overflow:visible; }
+      .debt-table, .debt-table tbody { display:block; width:100%; }
+      .debt-table thead { display:none; }
+      .debt-table tr.debt-row { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:0 13px; margin:0 0 11px; padding:13px 14px 12px; background:#fff; border:1px solid #e8edf1; border-radius:14px; box-shadow:0 3px 12px rgba(24,45,66,.035); }
+      .debt-table .debt-row td { display:flex; align-items:center; justify-content:space-between; gap:8px; min-width:0; padding:8px 0; border:0; font-size:12px; }
+      .debt-table .debt-row td.identity-cell { display:block; grid-column:1 / -1; padding:1px 0 11px; margin-bottom:4px; border-bottom:1px solid #edf1f4; }
+      .debt-table .record-name { font-size:15px; }
+      .debt-table .record-desc { font-size:11px; }
+      .debt-table .record-phone { font-size:10px; }
+      .mobile-label { display:inline; flex:0 0 auto; color:#82919e; font-size:10px; }
+      .table-value { font-size:11px; text-align:right; }
+      .debt-table .debt-row td:nth-child(5) { justify-content:space-between; }
+      .debt-table .debt-row td.actions-cell { display:block; grid-column:1 / -1; padding:10px 0 0; margin-top:4px; border-top:1px solid #edf1f4; }
+      .debt-table .record-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+      .debt-table .action { min-height:39px; padding:8px 7px; font-size:11px; border-radius:9px; }
+      .debt-table .record-meta { font-size:10px; margin-top:8px; }
+      .payment-detail-row { display:block; margin:-5px 0 12px; }
+      .payment-detail-row td { display:block; padding:0 !important; border:0; background:transparent; }
+      .payment-detail-row .payment-box { display:block; padding:12px; background:#f7fbfa; }
+      .payment-detail-row .payment-box label { margin-bottom:8px; }
+      .payment-detail-row .payment-row { max-width:none; }
+      .debt-row.is-leaving { opacity:0; transform:translateY(-5px); }
+    }
+    @media (max-width:420px) {
+      .debt-table tr.debt-row { padding:12px; gap:0 9px; }
+      .debt-table .action { font-size:10px; }
+      .mobile-label { font-size:9px; }
+      .table-value { font-size:10px; }
+    }
+
+
+
+    /* Tata letak aplikasi vertikal: lega, jelas, dan mudah disentuh */
+    html { scroll-behavior:smooth; background:#f2f5f9; }
+    body { min-height:100vh; background:#f2f5f9; color:#172b3d; }
+    .topbar { position:sticky; top:0; z-index:30; padding:12px 18px; background:#102b46; box-shadow:0 4px 16px rgba(16,43,70,.15); }
+    .topbar-inner { max-width:760px; }
+    .brand { font-size:18px; gap:12px; }
+    .brand-mark { width:43px; height:43px; border-radius:14px; font-size:21px; }
+    .local-badge { font-size:11px; }
+    main { width:min(760px, calc(100% - 28px)); margin:24px auto 44px; }
+    .intro { margin:0 2px 18px; }
+    .intro h1 { font-size:30px; line-height:1.16; margin-bottom:7px; letter-spacing:-.8px; }
+    .intro p { font-size:14px; line-height:1.55; }
+    .stats { display:flex; flex-direction:column; gap:11px; margin:0 0 16px; }
+    .stat { width:100%; min-height:112px; padding:18px 19px; border:1px solid #e3eaf0; border-radius:17px; box-shadow:0 4px 16px rgba(27,52,74,.045); }
+    .stat-primary { background:#eaf5f4; border-color:#d7eae7; }
+    .stat-label { margin-bottom:8px; color:#647789; font-size:11px; font-weight:800; letter-spacing:.55px; }
+    .stat-value { color:#17354c; font-size:27px; line-height:1.2; font-weight:820; letter-spacing:-.5px; }
+    .stat-note { margin-top:6px; font-size:11px; color:#788b9b; }
+    .workspace { display:flex; flex-direction:column; align-items:stretch; gap:15px; }
+    .panel { width:100%; border-radius:18px; border:1px solid #e3eaf0; box-shadow:0 4px 18px rgba(27,52,74,.045); overflow:hidden; }
+    .panel-head { padding:19px 19px 15px; }
+    .panel-head h2 { font-size:18px; font-weight:800; }
+    .panel-head p { margin-top:6px; font-size:12px; line-height:1.5; }
+    .form-body { padding:18px 19px 20px; }
+    .field { margin-bottom:17px; }
+    .field label { margin-bottom:8px; font-size:13px; color:#344d61; }
+    .field input { width:100%; min-height:55px; border-radius:13px; border:1px solid #d9e2e9; padding:14px; background:#fff; font-size:16px; }
+    .field input:focus { border-color:#168b83; box-shadow:0 0 0 3px rgba(8,127,120,.10); }
+    .money-input input { padding-left:45px; }
+    .money-input span { left:14px; font-size:14px; }
+    .field .hint { margin-top:7px; font-size:11px; line-height:1.45; }
+    .form-actions { display:flex; flex-direction:column; gap:9px; margin-top:21px; }
+    .btn { width:100%; min-height:53px; border-radius:13px; font-size:15px; font-weight:800; }
+    .btn-primary { background:#087f78; }
+    .btn-light { min-height:48px; }
+    .list-toolbar { padding:15px 17px; border-bottom:1px solid #e8edf2; }
+    .searchbox { min-height:53px; border-radius:13px; padding:0 14px; background:#f8fafc; }
+    .searchbox span { font-size:21px; }
+    .searchbox input { height:51px; font-size:15px; }
+    .records { display:flex; flex-direction:column; gap:12px; padding:14px; }
+    .debt-card { width:100%; padding:17px; background:#fff; border:1px solid #e5ebf0; border-radius:16px; box-shadow:0 3px 12px rgba(25,48,69,.035); opacity:1; transform:translateY(0); max-height:900px; overflow:hidden; transition:opacity .24s ease, transform .24s ease, max-height .24s ease, padding .24s ease, margin .24s ease; }
+    .debt-card.is-leaving { opacity:0; transform:translateY(-10px); max-height:0; padding-top:0; padding-bottom:0; margin-top:-12px; margin-bottom:0; border-color:transparent; }
+    .debt-card-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
+    .debt-identity { min-width:0; }
+    .debt-card .record-name { color:#1c354b; font-size:18px; font-weight:820; line-height:1.3; overflow-wrap:anywhere; }
+    .debt-card .record-desc { margin-top:4px; color:#728496; font-size:13px; line-height:1.45; overflow-wrap:anywhere; }
+    .debt-card .record-phone { margin-top:7px; color:#60788b; font-size:12px; overflow-wrap:anywhere; }
+    .debt-card .status { flex:0 0 auto; margin-top:2px; padding:7px 9px; border-radius:9px; font-size:10px; letter-spacing:.25px; }
+    .status-open { background:#fff0ef; color:#b94848; }
+    .debt-amounts { display:grid; grid-template-columns:1fr; gap:0; margin:16px 0 15px; padding:4px 13px; background:#f7f9fb; border:1px solid #edf1f4; border-radius:13px; }
+    .amount-tile { min-width:0; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:11px 0; border-bottom:1px solid #e8edf1; }
+    .amount-tile:last-child { border-bottom:0; }
+    .amount-tile span { color:#7a8a98; font-size:12px; }
+    .amount-tile strong { color:#334c60; font-size:14px; text-align:right; overflow-wrap:anywhere; }
+    .amount-tile.amount-remaining strong { color:#b94848; font-size:16px; }
+    .record-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+    .debt-card .action { display:flex; align-items:center; justify-content:center; min-width:0; min-height:47px; padding:9px 8px; border:1px solid #dfe7ed; border-radius:11px; background:#f8fafb; color:#425a6e; font-size:12px; font-weight:800; text-align:center; line-height:1.3; }
+    .debt-card .action.remind { background:#e8f6f4; border-color:#d4ebe8; color:#066a64; }
+    .debt-card .action.complete { background:#e9f7f0; border-color:#ccebdd; color:#13734f; }
+    .debt-card .action.danger { color:#ae4b4b; background:#fffafa; }
+    .debt-card .payment-box { margin-top:13px; padding:14px; border:1px solid #d9ebe7; background:#f5fbf9; border-radius:13px; }
+    .debt-card .payment-box label { display:block; margin-bottom:9px; color:#405e67; font-size:12px; font-weight:800; }
+    .debt-card .payment-row { display:flex; flex-direction:column; gap:9px; }
+    .debt-card .payment-row input { width:100%; min-height:52px; border:1px solid #d6e2e2; border-radius:11px; padding:12px; font-size:16px; }
+    .debt-card .payment-row .btn { min-height:49px; }
+    .debt-card .record-meta { margin-top:12px; color:#94a1ac; font-size:10px; line-height:1.4; }
+    .empty { padding:52px 18px; }
+    .empty-icon { width:53px; height:53px; border-radius:16px; }
+    .empty strong { font-size:15px; }
+    .empty span { font-size:12px; line-height:1.5; }
+    .footer-note { margin:18px 12px 0; font-size:11px; line-height:1.5; }
+    .toast { bottom:calc(18px + env(safe-area-inset-bottom)); width:max-content; max-width:calc(100% - 30px); padding:13px 17px; border-radius:13px; font-size:13px; line-height:1.4; }
+    @media (min-width:821px) {
+      main { width:min(760px, calc(100% - 40px)); margin-top:30px; }
+      .debt-card { padding:19px; }
+      .debt-amounts { grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; padding:10px 12px; }
+      .amount-tile { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:6px; padding:6px 8px; border-bottom:0; border-right:1px solid #e8edf1; }
+      .amount-tile:last-child { border-right:0; }
+      .amount-tile strong { text-align:left; }
+      .debt-card .payment-row { flex-direction:row; }
+      .debt-card .payment-row .btn { width:auto; min-width:205px; }
+    }
+    @media (max-width:480px) {
+      .topbar { padding:10px 14px; }
+      .brand { font-size:17px; }
+      .brand-mark { width:40px; height:40px; }
+      .local-badge { font-size:9px; gap:5px; }
+      main { width:calc(100% - 20px); margin:17px auto 32px; }
+      .intro h1 { font-size:28px; }
+      .stat { min-height:105px; padding:16px; }
+      .stat-value { font-size:25px; }
+      .panel-head { padding:17px 16px 13px; }
+      .form-body { padding:16px; }
+      .records { padding:11px; }
+      .debt-card { padding:14px; border-radius:14px; }
+      .debt-card .record-name { font-size:17px; }
+      .debt-card .status { font-size:9px; padding:6px 7px; }
+      .debt-card .action { min-height:48px; font-size:11px; }
+      .amount-tile span { font-size:11px; }
+      .amount-tile strong { font-size:13px; }
+      .amount-tile.amount-remaining strong { font-size:15px; }
+    }
+    @media (prefers-reduced-motion:reduce) {
+      *, *::before, *::after { scroll-behavior:auto !important; animation-duration:.01ms !important; transition-duration:.01ms !important; }
+    }
+
+
+    /* Penyimpanan cloud lintas perangkat */
+    .local-badge { color:#d5e2ed; }
+    .sync-panel { margin:0 0 17px; overflow:hidden; }
+    .sync-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 18px; }
+    .sync-title { min-width:0; }
+    .sync-title strong { display:block; font-size:14px; color:#20394e; }
+    .sync-title span { display:block; margin-top:4px; color:#7b8b99; font-size:11px; line-height:1.45; }
+    .sync-state { display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; padding:7px 10px; border-radius:20px; background:#f0f3f6; color:#657789; font-size:10px; font-weight:800; }
+    .sync-state::before { content:""; width:7px; height:7px; border-radius:50%; background:#9aa8b5; }
+    .sync-state.connected { color:#13734f; background:#e9f7f0; }
+    .sync-state.connected::before { background:#20a56d; }
+    .sync-state.error { color:#a74444; background:#fff0ef; }
+    .sync-state.error::before { background:#d45d5d; }
+    .sync-details { border-top:1px solid #edf1f4; }
+    .sync-details summary { padding:13px 18px; color:#08756e; font-size:12px; font-weight:800; cursor:pointer; list-style:none; }
+    .sync-details summary::-webkit-details-marker { display:none; }
+    .sync-details summary::after { content:"＋"; float:right; font-size:16px; line-height:1; }
+    .sync-details[open] summary::after { content:"−"; }
+    .sync-body { padding:0 18px 18px; }
+    .sync-body .field { margin-bottom:12px; }
+    .sync-body .field input { min-height:46px; font-size:14px; }
+    .sync-help { padding:12px 13px; background:#f5f8fb; border:1px solid #e8eef3; border-radius:12px; color:#65798b; font-size:11px; line-height:1.55; margin:12px 0; }
+    .sync-buttons { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:13px; }
+    .sync-buttons .btn { min-height:43px; padding:9px 10px; font-size:12px; }
+    .sync-buttons .btn-primary { grid-column:1 / -1; }
+    .sync-footnote { color:#8997a4; font-size:10px; line-height:1.5; margin:10px 1px 0; }
+    @media (max-width:560px) {
+      .sync-head { align-items:flex-start; padding:15px; }
+      .sync-title strong { font-size:14px; }
+      .sync-state { font-size:9px; padding:7px 8px; }
+      .sync-details summary { padding:13px 15px; }
+      .sync-body { padding:0 15px 16px; }
+      .sync-body .field input { min-height:51px; font-size:16px; }
+      .sync-buttons { grid-template-columns:1fr; }
+      .sync-buttons .btn-primary { grid-column:auto; }
+    }
+
+
+    /* Form item multi-barang dan pemilih kontak perangkat */
+    .item-builder { display:grid; gap:10px; }
+    .item-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(125px,.7fr) 42px; gap:9px; align-items:end; padding:12px; border:1px solid #e1e9ef; border-radius:14px; background:#fbfdfe; }
+    .item-input-wrap { min-width:0; }
+    .item-input-wrap label { display:block; color:#617487; font-size:11px; font-weight:750; margin:0 0 6px; }
+    .item-input-wrap input { width:100%; min-width:0; min-height:47px; border:1px solid #dce4eb; border-radius:10px; padding:10px 11px; color:var(--ink); background:white; outline:none; font:inherit; font-size:14px; }
+    .item-input-wrap input:focus { border-color:#54aaa4; box-shadow:0 0 0 3px rgba(8,127,120,.10); }
+    .item-input-wrap .money-input span { left:10px; font-size:11px; }
+    .item-input-wrap .money-input input { padding-left:34px; }
+    .remove-item { width:42px; height:46px; border:1px solid #f1dada; border-radius:10px; color:#b34d4d; background:#fff6f5; font-size:23px; line-height:1; }
+    .remove-item:disabled { opacity:.35; cursor:not-allowed; }
+    .add-item-button { width:100%; min-height:46px; margin-top:10px; border:1px dashed #8bbfba; border-radius:11px; background:#f0faf8; color:#08756e; font-size:13px; font-weight:800; }
+    .calculated-total { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:15px 16px; border:1px solid #cde9e4; border-radius:13px; background:#eff9f7; }
+    .calculated-total strong { color:#08756e; font-size:23px; letter-spacing:-.5px; }
+    .calculated-total span { color:#6b8c89; font-size:11px; text-align:right; }
+    .contact-input-row { display:flex; gap:8px; align-items:stretch; }
+    .contact-input-row input { flex:1; min-width:0; }
+    .get-contact-button { flex:0 0 auto; min-height:49px; padding:0 13px; border:1px solid #cfe5e2; border-radius:12px; background:#edf8f6; color:#08756e; font-size:12px; font-weight:800; white-space:nowrap; }
+    .get-contact-button:active,.add-item-button:active { transform:scale(.985); }
+    .record-items { display:grid; gap:5px; margin-top:9px; }
+    .record-item-line { display:flex; justify-content:space-between; gap:12px; color:#607487; font-size:11px; line-height:1.4; }
+    .record-item-line span:first-child { min-width:0; overflow-wrap:anywhere; }
+    .record-item-line strong { flex:0 0 auto; color:#344d61; font-weight:750; }
+    @media(max-width:560px) {
+      .item-row { grid-template-columns:minmax(0,1fr) 42px; gap:8px; padding:11px; }
+      .item-input-wrap:first-child { grid-column:1 / -1; }
+      .item-input-wrap:nth-child(2) { grid-column:1; }
+      .remove-item { grid-column:2; grid-row:2; align-self:end; }
+      .item-input-wrap input { min-height:50px; font-size:16px; }
+      .add-item-button { min-height:50px; font-size:14px; }
+      .calculated-total { padding:15px; }
+      .calculated-total strong { font-size:22px; }
+      .contact-input-row { gap:7px; }
+      .get-contact-button { padding:0 10px; font-size:11px; }
+    }
+
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><div class="brand-mark">✓</div><span>CatatHutang</span></div>
+      <div class="local-badge" id="headerSyncBadge"><span class="local-dot"></span><span id="headerSyncText">Tersimpan di perangkat ini</span></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Catatan hutang</h1>
+      <p>Kelola tagihan dan pembayaran dengan lebih rapi.</p>
+    </section>
+
+    <section class="panel sync-panel" aria-label="Penyimpanan lintas perangkat">
+      <div class="sync-head">
+        <div class="sync-title">
+          <strong>Penyimpanan & sinkronisasi</strong>
+          <span>Gunakan database yang sama agar catatan dapat dibuka dari HP lain.</span>
+        </div>
+        <span class="sync-state" id="cloudStatus">Mode lokal</span>
+      </div>
+      <details class="sync-details" id="cloudSettings">
+        <summary>Hubungkan database lintas HP</summary>
+        <div class="sync-body">
+          <div class="sync-help">
+            <strong>ID database Anda sudah disiapkan: 085182819967.</strong><br>
+            Agar data benar-benar berpindah antar-HP, aplikasi perlu database cloud. Siapkan Supabase Free satu kali, lalu gunakan URL, kunci publik, ID, dan PIN yang sama di kedua HP.
+          </div>
+          <div class="field">
+            <label for="cloudAccount">ID database</label>
+            <input id="cloudAccount" type="text" value="085182819967" maxlength="40" inputmode="text" autocomplete="off">
+          </div>
+          <div class="field">
+            <label for="supabaseUrl">URL Project Supabase</label>
+            <input id="supabaseUrl" type="url" placeholder="https://xxxxxxxx.supabase.co" autocomplete="url">
+          </div>
+          <div class="field">
+            <label for="supabaseKey">Publishable key / anon public key</label>
+            <input id="supabaseKey" type="text" placeholder="Tempel kunci publik Supabase" autocomplete="off" spellcheck="false">
+            <div class="hint">Gunakan kunci publik (anon/publishable), jangan pernah tempel service_role key.</div>
+          </div>
+          <div class="field">
+            <label for="cloudPin">PIN rahasia database</label>
+            <input id="cloudPin" type="password" minlength="8" maxlength="128" placeholder="Buat PIN rahasia minimal 8 karakter" autocomplete="new-password">
+            <div class="hint">Buat PIN yang hanya Anda ketahui. Masukkan PIN yang sama saat membuka dari HP lain. PIN tidak disimpan di perangkat.</div>
+          </div>
+          <div class="sync-buttons">
+            <button class="btn btn-primary" id="connectCloud" type="button">Hubungkan & sinkronkan</button>
+            <button class="btn btn-light" id="refreshCloud" type="button" disabled>Muat data terbaru</button>
+            <button class="btn btn-light" id="copySetupSql" type="button">Salin SQL setup database</button>
+            <button class="btn btn-light" id="disconnectCloud" type="button" disabled>Putuskan koneksi</button>
+          </div>
+          <div class="sync-help">
+            <strong>Setup satu kali:</strong><br>
+            1. Buat project gratis di Supabase.<br>
+            2. Tekan <strong>Salin SQL setup database</strong>, buka Supabase → SQL Editor → New query, tempel SQL, lalu Run.<br>
+            3. Ambil Project URL dan Publishable/anon key dari Project Settings → API, lalu isi di atas.<br>
+            4. Hubungkan HP pertama. Di HP kedua, buka file/aplikasi yang sama dan masukkan URL, key, ID, serta PIN yang sama.
+          </div>
+          <p class="sync-footnote">ID hanya alamat akun database, bukan kata sandi. Jangan bagikan PIN atau kunci pribadi. Sinkronisasi memerlukan internet dan sebaiknya dibuka melalui alamat HTTPS; saat offline, catatan tetap disimpan di perangkat ini.</p>
+        </div>
+      </details>
+    </section>
+
+    <section class="stats" aria-label="Ringkasan hutang">
+      <div class="stat stat-primary">
+        <div class="stat-label">TOTAL SISA HUTANG</div>
+        <div class="stat-value" id="totalRemaining">Rp0</div>
+        <div class="stat-note">Jumlah uang yang masih perlu ditagih</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">CATATAN AKTIF</div>
+        <div class="stat-value" id="openCount">0 orang</div>
+        <div class="stat-note">Jumlah orang yang masih memiliki hutang</div>
+      </div>
+    </section>
+
+    <section class="workspace">
+      <section class="panel">
+        <div class="panel-head">
+          <h2 id="formTitle">Tambah catatan baru</h2>
+          <p>Isi data orang yang memiliki hutang.</p>
+        </div>
+        <form class="form-body" id="debtForm" autocomplete="off">
+          <div class="field">
+            <label for="personName">Nama</label>
+            <input id="personName" name="personName" type="text" maxlength="80" placeholder="Contoh: Budi" required>
+          </div>
+          <div class="field item-builder-field">
+            <label>Barang yang dihutang</label>
+            <div class="item-builder" id="itemRows" aria-live="polite">
+              <div class="item-row">
+                <div class="item-input-wrap">
+                  <label>Nama barang</label>
+                  <input class="item-name" type="text" maxlength="100" placeholder="Contoh: Beras 5 kg" autocomplete="off">
+                </div>
+                <div class="item-input-wrap">
+                  <label>Nominal</label>
+                  <div class="money-input"><span>Rp</span><input class="item-amount" type="number" min="1" step="1" inputmode="numeric" placeholder="10000"></div>
+                </div>
+                <button class="remove-item" type="button" aria-label="Hapus barang" disabled title="Minimal satu barang">×</button>
+              </div>
+            </div>
+            <button class="add-item-button" id="addItemButton" type="button">＋ Tambah Barang</button>
+            <div class="hint">Masukkan barang satu per satu. Nominal total dihitung otomatis.</div>
+          </div>
+          <div class="field total-field">
+            <label>Total hutang</label>
+            <div class="calculated-total"><strong id="calculatedDebtTotal">Rp0</strong><span>Total seluruh barang</span></div>
+            <input id="debtAmount" name="debtAmount" type="hidden" value="0">
+            <input id="description" name="description" type="hidden" value="">
+          </div>
+          <div class="field">
+            <label for="phoneNumber">Nomor WhatsApp</label>
+            <div class="contact-input-row">
+              <input id="phoneNumber" name="phoneNumber" type="tel" maxlength="22" inputmode="tel" placeholder="Contoh: 081234567890" autocomplete="tel">
+              <button class="get-contact-button" id="getContactButton" type="button">♙ Get Kontak</button>
+            </div>
+            <div class="hint">Opsional. Get Kontak mengambil nama dan nomor dari kontak HP jika browser mendukung.</div>
+          </div>
+          <div class="field" id="initialPaymentField">
+            <label for="initialPayment">Pembayaran awal (opsional)</label>
+            <div class="money-input"><span>Rp</span><input id="initialPayment" name="initialPayment" type="number" min="0" step="1" inputmode="numeric" placeholder="0"></div>
+            <div class="hint">Isi jika sebagian hutang sudah dibayar.</div>
+          </div>
+          <div class="form-actions">
+            <button class="btn btn-primary" type="submit" id="saveButton">+ Simpan catatan</button>
+            <button class="btn btn-light" type="button" id="cancelEdit" hidden>Batal</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel list-panel">
+        <div class="panel-head">
+          <h2>Daftar hutang</h2>
+          <p>Cari nama, keterangan, atau nomor WhatsApp.</p>
+        </div>
+        <div class="list-toolbar">
+          <label class="searchbox" for="searchInput"><span>⌕</span><input id="searchInput" type="search" placeholder="Cari nama, keterangan, atau nomor..." autocomplete="off"></label>
+        </div>
+        <div class="records" id="records" aria-live="polite"></div>
+      </section>
+    </section>
+    <p class="footer-note">Data otomatis tersimpan di perangkat. Setelah database cloud dihubungkan, perubahan juga disinkronkan agar dapat dibuka dari HP lain.</p>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+      const STORAGE_KEY = 'catathutang_profesional_v1';
+      const $ = (id) => document.getElementById(id);
+      const form = $('debtForm');
+      const recordsEl = $('records');
+      let debts = loadDebts();
+      let editingId = null;
+      let openPaymentId = null;
+      let toastTimer = null;
+      const CLOUD_CONFIG_KEY = 'catathutang_cloud_config_v1';
+      let cloudConfig = loadCloudConfig();
+      let cloudPin = '';
+      let cloudConnected = false;
+      let cloudSyncBusy = false;
+      let cloudLocalDirty = false;
+      let applyingCloudData = false;
+      let cloudSaveTimer = null;
+      let cloudPollTimer = null;
+      let lastCloudUpdatedAt = null;
+
+      function loadCloudConfig() {
+        try {
+          const value = JSON.parse(localStorage.getItem(CLOUD_CONFIG_KEY) || '{}');
+          return {
+            url: String(value.url || ''),
+            key: String(value.key || ''),
+            accountId: String(value.accountId || '085182819967')
+          };
+        } catch (_) {
+          return { url: '', key: '', accountId: '085182819967' };
+        }
+      }
+
+      function saveCloudConfig() {
+        try {
+          localStorage.setItem(CLOUD_CONFIG_KEY, JSON.stringify(cloudConfig));
+          return true;
+        } catch (_) {
+          showToast('Pengaturan database tidak dapat disimpan di perangkat ini.');
+          return false;
+        }
+      }
+
+      function normalizeItemLines(rawItems, description, fallbackAmount) {
+        const lines = Array.isArray(rawItems)
+          ? rawItems.map(line => ({ name: String(line && line.name || '').trim(), amount: Math.floor(Number(line && line.amount) || 0) })).filter(line => line.name && line.amount > 0)
+          : [];
+        if (lines.length) return lines;
+        const amount = Math.floor(Number(fallbackAmount) || 0);
+        return amount > 0 ? [{ name: String(description || 'Barang/Tagihan'), amount }] : [];
+      }
+
+      function loadDebts() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+          if (!Array.isArray(saved)) return [];
+          return saved.filter(item => item && typeof item === 'object' && item.id)
+            .map(item => {
+              const items = normalizeItemLines(item.items, item.description, item.amount);
+              const amount = items.reduce((sum, line) => sum + line.amount, 0);
+              return {
+                id: String(item.id),
+                name: String(item.name || ''),
+                description: String(item.description || items.map(line => line.name).join(' · ')),
+                items,
+                phone: String(item.phone || ''),
+                amount: amount || Math.max(0, Number(item.amount) || 0),
+                createdAt: item.createdAt || new Date().toISOString(),
+                updatedAt: item.updatedAt || item.createdAt || new Date().toISOString(),
+                payments: Array.isArray(item.payments) ? item.payments.filter(p => p && Number(p.amount) > 0).map(p => ({ amount: Number(p.amount), date: p.date || new Date().toISOString(), settlement: p.settlement === true })) : []
+              };
+            })
+            .filter(item => item.amount > item.payments.reduce((sum, payment) => sum + payment.amount, 0));
+        } catch (error) {
+          console.error('Gagal membaca data lokal:', error);
+          return [];
+        }
+      }
+
+      function saveDebts() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(debts));
+          if (cloudConnected && !applyingCloudData) {
+            cloudLocalDirty = true;
+            scheduleCloudSave();
+          }
+          return true;
+        } catch (error) {
+          console.error('Gagal menyimpan data:', error);
+          showToast('Penyimpanan penuh atau tidak tersedia. Data belum tersimpan.');
+          return false;
+        }
+      }
+
+      // Bersihkan catatan lunas dari versi sebelumnya saat aplikasi dibuka.
+      saveDebts();
+
+      const CLOUD_SETUP_SQL = `create schema if not exists extensions;
+create extension if not exists pgcrypto with schema extensions;
+
+create table if not exists public.debt_sync_store (
+  account_id text primary key,
+  pin_salt text not null,
+  pin_hash text not null,
+  payload jsonb not null default '[]'::jsonb,
+  updated_at timestamptz not null default now(),
+  constraint debt_sync_payload_is_array check (jsonb_typeof(payload) = 'array')
+);
+
+alter table public.debt_sync_store enable row level security;
+revoke all on table public.debt_sync_store from anon, authenticated;
+grant usage on schema public to anon, authenticated;
+
+create or replace function public.debt_get(p_account_id text, p_pin text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_row public.debt_sync_store%rowtype;
+begin
+  if p_account_id is null or pg_catalog.length(pg_catalog.btrim(p_account_id)) < 3 or p_pin is null or pg_catalog.length(p_pin) < 8 then
+    raise exception 'ID_DATABASE_ATAU_PIN_TIDAK_VALID';
+  end if;
+  select * into v_row from public.debt_sync_store where account_id = p_account_id;
+  if not found then
+    return pg_catalog.jsonb_build_object('exists', false, 'data', '[]'::jsonb, 'updated_at', null);
+  end if;
+  if v_row.pin_hash <> pg_catalog.encode(extensions.digest(p_pin || v_row.pin_salt, 'sha256'), 'hex') then
+    raise exception 'PIN_DATABASE_SALAH';
+  end if;
+  return pg_catalog.jsonb_build_object('exists', true, 'data', v_row.payload, 'updated_at', v_row.updated_at);
+end;
+$$;
+
+create or replace function public.debt_save(p_account_id text, p_pin text, p_payload jsonb)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_hash text;
+  v_salt text;
+  v_time timestamptz;
+begin
+  if p_account_id is null or pg_catalog.length(pg_catalog.btrim(p_account_id)) < 3 or p_pin is null or pg_catalog.length(p_pin) < 8 then
+    raise exception 'ID_DATABASE_ATAU_PIN_TIDAK_VALID';
+  end if;
+  if p_payload is null or pg_catalog.jsonb_typeof(p_payload) <> 'array' then
+    raise exception 'FORMAT_DATA_HARUS_ARRAY';
+  end if;
+  perform pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(p_account_id, 0));
+  select pin_hash, pin_salt into v_hash, v_salt from public.debt_sync_store where account_id = p_account_id for update;
+  if not found then
+    v_salt := pg_catalog.encode(extensions.gen_random_bytes(16), 'hex');
+    insert into public.debt_sync_store(account_id, pin_salt, pin_hash, payload, updated_at)
+    values (p_account_id, v_salt, pg_catalog.encode(extensions.digest(p_pin || v_salt, 'sha256'), 'hex'), p_payload, pg_catalog.now())
+    returning updated_at into v_time;
+  else
+    if v_hash <> pg_catalog.encode(extensions.digest(p_pin || v_salt, 'sha256'), 'hex') then
+      raise exception 'PIN_DATABASE_SALAH';
+    end if;
+    update public.debt_sync_store set payload = p_payload, updated_at = pg_catalog.now()
+      where account_id = p_account_id returning updated_at into v_time;
+  end if;
+  return pg_catalog.jsonb_build_object('ok', true, 'updated_at', v_time);
+end;
+$$;
+
+revoke all on function public.debt_get(text, text) from public;
+revoke all on function public.debt_save(text, text, jsonb) from public;
+grant execute on function public.debt_get(text, text) to anon, authenticated;
+grant execute on function public.debt_save(text, text, jsonb) to anon, authenticated;`;
+
+      function setCloudStatus(message, state = 'local') {
+        const status = $('cloudStatus');
+        const header = $('headerSyncText');
+        const badge = $('headerSyncBadge');
+        status.textContent = message;
+        status.className = 'sync-state' + (state === 'connected' ? ' connected' : state === 'error' ? ' error' : '');
+        if (header) header.textContent = state === 'connected' ? 'Database tersinkron' : state === 'error' ? 'Periksa sinkronisasi' : 'Tersimpan di perangkat ini';
+        if (badge) badge.title = message;
+      }
+
+      function fillCloudSettings() {
+        $('cloudAccount').value = cloudConfig.accountId || '085182819967';
+        $('supabaseUrl').value = cloudConfig.url || '';
+        $('supabaseKey').value = cloudConfig.key || '';
+      }
+
+      function cleanCloudUrl(value) {
+        return String(value || '').trim().replace(/\/+$/, '');
+      }
+
+      async function cloudRpc(name, body) {
+        const base = cleanCloudUrl(cloudConfig.url);
+        const response = await fetch(`${base}/rest/v1/rpc/${name}`, {
+          method: 'POST',
+          headers: {
+            'apikey': cloudConfig.key,
+            'Content-Type': 'application/json',
+            ...(cloudConfig.key.startsWith('eyJ') ? { 'Authorization': `Bearer ${cloudConfig.key}` } : {})
+          },
+          body: JSON.stringify(body)
+        });
+        const raw = await response.text();
+        let result;
+        try { result = raw ? JSON.parse(raw) : null; }
+        catch (_) { result = raw; }
+        if (!response.ok) {
+          const message = result && typeof result === 'object' ? (result.message || result.details || result.hint || JSON.stringify(result)) : String(result || response.statusText);
+          throw new Error(message || `HTTP ${response.status}`);
+        }
+        return result;
+      }
+
+      function normalizeCloudDebts(value) {
+        if (!Array.isArray(value)) return [];
+        return value.filter(item => item && typeof item === 'object' && item.id)
+          .map(item => {
+            const items = normalizeItemLines(item.items, item.description, item.amount);
+            const amount = items.reduce((sum, line) => sum + line.amount, 0);
+            return {
+              id: String(item.id),
+              name: String(item.name || ''),
+              description: String(item.description || items.map(line => line.name).join(' · ')),
+              items,
+              phone: String(item.phone || ''),
+              amount: amount || Math.max(0, Number(item.amount) || 0),
+              createdAt: item.createdAt || new Date().toISOString(),
+              updatedAt: item.updatedAt || item.createdAt || new Date().toISOString(),
+              payments: Array.isArray(item.payments) ? item.payments.filter(p => p && Number(p.amount) > 0).map(p => ({ amount: Number(p.amount), date: p.date || new Date().toISOString(), settlement: p.settlement === true })) : []
+            };
+          })
+          .filter(item => item.name && item.amount > item.payments.reduce((sum, payment) => sum + payment.amount, 0));
+      }
+
+      async function getCloudSnapshot() {
+        return await cloudRpc('debt_get', {
+          p_account_id: cloudConfig.accountId,
+          p_pin: cloudPin
+        });
+      }
+
+      async function saveCloudNow() {
+        if (!cloudConnected || !cloudPin || cloudSyncBusy) return false;
+        cloudSyncBusy = true;
+        try {
+          const result = await cloudRpc('debt_save', {
+            p_account_id: cloudConfig.accountId,
+            p_pin: cloudPin,
+            p_payload: debts
+          });
+          lastCloudUpdatedAt = result && result.updated_at ? result.updated_at : new Date().toISOString();
+          cloudLocalDirty = false;
+          setCloudStatus('Terhubung · data tersinkron', 'connected');
+          return true;
+        } catch (error) {
+          console.error('Cloud save error:', error);
+          setCloudStatus('Gagal mengirim data · tetap tersimpan lokal', 'error');
+          showToast('Data lokal aman, tetapi sinkronisasi gagal. Periksa internet atau pengaturan database.');
+          return false;
+        } finally {
+          cloudSyncBusy = false;
+        }
+      }
+
+      function scheduleCloudSave() {
+        clearTimeout(cloudSaveTimer);
+        cloudSaveTimer = setTimeout(() => { cloudSaveTimer = null; saveCloudNow(); }, 650);
+        setCloudStatus('Perubahan menunggu sinkronisasi', 'connected');
+      }
+
+      async function applyCloudSnapshot(snapshot, showMessage = false) {
+        const remoteDebts = normalizeCloudDebts(snapshot && snapshot.data);
+        applyingCloudData = true;
+        debts = remoteDebts;
+        try { localStorage.setItem(STORAGE_KEY, JSON.stringify(debts)); }
+        finally { applyingCloudData = false; }
+        cloudLocalDirty = false;
+        lastCloudUpdatedAt = snapshot && snapshot.updated_at ? snapshot.updated_at : null;
+        openPaymentId = null;
+        if (editingId && !getDebt(editingId)) resetForm();
+        render();
+        if (showMessage) showToast(`${debts.length} catatan berhasil dimuat dari database.`);
+      }
+
+      async function refreshCloud(silent = false, force = false) {
+        if (!cloudConnected || cloudSyncBusy) return;
+        if (cloudLocalDirty && !force) return;
+        cloudSyncBusy = true;
+        try {
+          const snapshot = await getCloudSnapshot();
+          if (!snapshot || snapshot.exists !== true) {
+            if (!silent) showToast('Data database belum ditemukan. Hubungkan kembali untuk membuat penyimpanan.');
+            return;
+          }
+          const incomingStamp = snapshot.updated_at || null;
+          if (incomingStamp && incomingStamp !== lastCloudUpdatedAt) {
+            await applyCloudSnapshot(snapshot, !silent);
+            setCloudStatus('Terhubung · data terbaru dimuat', 'connected');
+          } else if (!silent) {
+            showToast('Data sudah paling baru.');
+          }
+        } catch (error) {
+          console.error('Cloud refresh error:', error);
+          setCloudStatus('Tidak dapat memuat database', 'error');
+          if (!silent) showToast('Gagal memuat database: ' + (error.message || 'Periksa koneksi.'));
+        } finally {
+          cloudSyncBusy = false;
+        }
+      }
+
+      function startCloudPolling() {
+        clearInterval(cloudPollTimer);
+        cloudPollTimer = setInterval(() => {
+          if (document.visibilityState === 'visible' && cloudConnected && !cloudLocalDirty && !cloudSaveTimer) {
+            refreshCloud(true, false);
+          }
+        }, 20000);
+      }
+
+      async function connectCloud() {
+        const url = cleanCloudUrl($('supabaseUrl').value);
+        const key = $('supabaseKey').value.trim();
+        const accountId = $('cloudAccount').value.trim();
+        const pin = $('cloudPin').value;
+        if (!/^https:\/\//i.test(url)) return showToast('Masukkan URL Project Supabase yang diawali https://.');
+        if (!key || key.length < 20) return showToast('Masukkan Publishable key atau anon public key Supabase.');
+        if (accountId.length < 3) return showToast('ID database minimal 3 karakter.');
+        if (pin.length < 8) return showToast('PIN database minimal 8 karakter.');
+
+        cloudConfig = { url, key, accountId };
+        if (!saveCloudConfig()) return;
+        cloudPin = pin;
+        setCloudStatus('Menghubungkan...', 'local');
+        $('connectCloud').disabled = true;
+        try {
+          const snapshot = await getCloudSnapshot();
+          if (snapshot && snapshot.exists === true) {
+            const remote = normalizeCloudDebts(snapshot.data);
+            const same = JSON.stringify(remote) === JSON.stringify(debts);
+            if (!same && debts.length > 0) {
+              const chooseCloud = confirm(`Database cloud sudah berisi ${remote.length} catatan.\n\nPilih OK untuk memakai data cloud (disarankan agar HP mengikuti database utama).\nPilih Batal untuk mengganti isi cloud dengan ${debts.length} catatan lokal di HP ini.`);
+              if (chooseCloud) {
+                await applyCloudSnapshot(snapshot, false);
+              } else {
+                cloudConnected = true;
+                cloudLocalDirty = true;
+                const saved = await saveCloudNow();
+                if (!saved) throw new Error('Data lokal belum berhasil dikirim ke cloud.');
+              }
+            } else {
+              await applyCloudSnapshot(snapshot, false);
+            }
+          } else {
+            cloudConnected = true;
+            cloudLocalDirty = true;
+            const saved = await saveCloudNow();
+            if (!saved) throw new Error('Belum berhasil membuat penyimpanan cloud.');
+          }
+          cloudConnected = true;
+          $('refreshCloud').disabled = false;
+          $('disconnectCloud').disabled = false;
+          $('cloudPin').value = '';
+          $('cloudSettings').open = false;
+          setCloudStatus('Terhubung · sinkron otomatis aktif', 'connected');
+          startCloudPolling();
+          showToast('Database berhasil dihubungkan. HP lain dapat memakai ID dan PIN yang sama.');
+        } catch (error) {
+          cloudConnected = false;
+          cloudPin = '';
+          $('refreshCloud').disabled = true;
+          $('disconnectCloud').disabled = true;
+          setCloudStatus('Belum terhubung · periksa pengaturan', 'error');
+          const raw = error && error.message ? error.message : 'Kesalahan tidak diketahui';
+          const hint = /PIN_DATABASE_SALAH/i.test(raw) ? 'PIN database salah.' : /debt_get|debt_save|function|schema cache/i.test(raw) ? 'SQL setup belum dijalankan atau nama fungsi belum tersedia.' : raw;
+          showToast('Koneksi gagal: ' + hint.slice(0, 150));
+          console.error('Cloud connect error:', error);
+        } finally {
+          $('connectCloud').disabled = false;
+        }
+      }
+
+      function disconnectCloud() {
+        cloudConnected = false;
+        cloudPin = '';
+        cloudLocalDirty = false;
+        clearTimeout(cloudSaveTimer);
+        clearInterval(cloudPollTimer);
+        $('refreshCloud').disabled = true;
+        $('disconnectCloud').disabled = true;
+        setCloudStatus('Mode lokal · cloud terputus', 'local');
+        showToast('Koneksi cloud diputus. Data lokal tetap tersimpan.');
+      }
+
+      $('connectCloud').addEventListener('click', connectCloud);
+      $('refreshCloud').addEventListener('click', () => refreshCloud(false, true));
+      $('disconnectCloud').addEventListener('click', disconnectCloud);
+      $('copySetupSql').addEventListener('click', () => copyText(CLOUD_SETUP_SQL));
+      fillCloudSettings();
+      setCloudStatus(cloudConfig.url && cloudConfig.key ? 'Pengaturan tersimpan · masukkan PIN untuk masuk' : 'Mode lokal · database belum dihubungkan', 'local');
+      window.addEventListener('online', () => {
+        if (cloudConnected && cloudLocalDirty) scheduleCloudSave();
+        else if (cloudConnected) refreshCloud(true, false);
+      });
+      document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible' && cloudConnected && !cloudLocalDirty) refreshCloud(true, false);
+      });
+
+      function totalPaid(item) {
+        return item.payments.reduce((sum, payment) => sum + (Number(payment.amount) || 0), 0);
+      }
+      function remaining(item) { return Math.max(0, item.amount - totalPaid(item)); }
+      function rupiah(value) {
+        return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(Number(value) || 0);
+      }
+      function dateText(value) {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return '-';
+        return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(date);
+      }
+      function escapeHtml(value) {
+        return String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
+      }
+      function showToast(message) {
+        const toast = $('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2600);
+      }
+      function updateStats() {
+        const total = debts.reduce((sum, item) => sum + remaining(item), 0);
+        const open = debts.filter(item => remaining(item) > 0).length;
+        $('totalRemaining').textContent = rupiah(total);
+        $('openCount').textContent = open + ' orang';
+      }
+
+      function render() {
+        updateStats();
+        const query = $('searchInput').value.trim().toLocaleLowerCase('id-ID');
+        // Urutkan berdasarkan tanggal dibuat: catatan paling lama di atas, terbaru di bawah.
+        const sorted = [...debts].sort((a, b) => new Date(a.createdAt || a.updatedAt || 0) - new Date(b.createdAt || b.updatedAt || 0));
+        const filtered = sorted.filter(item =>
+          [item.name, item.description, item.phone, ...(item.items || []).map(line => line.name)].join(' ').toLocaleLowerCase('id-ID').includes(query)
+          && remaining(item) > 0
+        );
+
+        if (!filtered.length) {
+          const hasSearch = Boolean(query);
+          const title = hasSearch ? 'Catatan tidak ditemukan' : (debts.length ? 'Semua catatan sudah diselesaikan' : 'Belum ada catatan hutang');
+          const description = hasSearch ? 'Coba nama, keterangan, atau nomor WhatsApp yang lain.' : (debts.length ? 'Tidak ada hutang aktif yang perlu ditagih saat ini.' : 'Tambahkan catatan pertama melalui formulir di atas.');
+          recordsEl.innerHTML = `<div class="empty"><div class="empty-icon">${hasSearch ? '⌕' : '＋'}</div><strong>${title}</strong><span>${description}</span></div>`;
+          return;
+        }
+
+        recordsEl.innerHTML = filtered.map(item => {
+          const paid = totalPaid(item);
+          const left = remaining(item);
+          const phoneText = item.phone ? escapeHtml(item.phone) : 'Nomor WhatsApp belum diisi';
+          const paymentBox = openPaymentId === item.id ? `
+            <div class="payment-box" data-payment-row="${escapeHtml(item.id)}">
+              <label for="payment-${escapeHtml(item.id)}">Nominal pembayaran diterima</label>
+              <div class="payment-row">
+                <input id="payment-${escapeHtml(item.id)}" type="number" min="1" max="${left}" step="1" inputmode="numeric" placeholder="Maksimal ${left}" data-payment-input="${escapeHtml(item.id)}">
+                <button class="btn btn-primary" type="button" data-action="save-payment" data-id="${escapeHtml(item.id)}">Simpan pembayaran</button>
+              </div>
+            </div>` : '';
+          return `
+            <article class="debt-card" data-record-id="${escapeHtml(item.id)}">
+              <div class="debt-card-head">
+                <div class="debt-identity">
+                  <div class="record-name">${escapeHtml(item.name)}</div>
+                  <div class="record-desc">${Array.isArray(item.items) && item.items.length ? `${item.items.length} barang dalam catatan` : escapeHtml(item.description || 'Tanpa keterangan')}</div>
+                  <div class="record-phone">${phoneText}</div>
+                  <div class="record-items">${(Array.isArray(item.items) ? item.items : []).map(line => `<div class="record-item-line"><span>${escapeHtml(line.name)}</span><strong>${rupiah(line.amount)}</strong></div>`).join('')}</div>
+                </div>
+                <span class="status status-open">BELUM LUNAS</span>
+              </div>
+              <div class="debt-amounts">
+                <div class="amount-tile"><span>Total hutang</span><strong>${rupiah(item.amount)}</strong></div>
+                <div class="amount-tile"><span>Sudah dibayar</span><strong>${rupiah(paid)}</strong></div>
+                <div class="amount-tile amount-remaining"><span>Sisa hutang</span><strong>${rupiah(left)}</strong></div>
+              </div>
+              <div class="record-actions">
+                <button class="action action-pay" type="button" data-action="payment" data-id="${escapeHtml(item.id)}">＋ Catat bayar</button>
+                <button class="action remind" type="button" data-action="remind" data-id="${escapeHtml(item.id)}">Tagih WhatsApp</button>
+                <button class="action" type="button" data-action="copy" data-id="${escapeHtml(item.id)}">Salin pesan</button>
+                <button class="action complete" type="button" data-action="complete" data-id="${escapeHtml(item.id)}">✓ Lunaskan & hapus</button>
+                <button class="action" type="button" data-action="edit" data-id="${escapeHtml(item.id)}">Edit catatan</button>
+                <button class="action danger" type="button" data-action="delete" data-id="${escapeHtml(item.id)}">Hapus catatan</button>
+              </div>
+              ${paymentBox}
+              <div class="record-meta">${item.payments.length ? `${item.payments.length} kali pembayaran tercatat` : `Dicatat ${dateText(item.createdAt)}`} · Diperbarui ${dateText(item.updatedAt)}</div>
+            </article>`;
+        }).join('');
+      }
+
+      function addItemRow(line = { name: '', amount: '' }) {
+        const row = document.createElement('div');
+        row.className = 'item-row';
+        row.innerHTML = `
+          <div class="item-input-wrap">
+            <label>Nama barang</label>
+            <input class="item-name" type="text" maxlength="100" placeholder="Contoh: Beras 5 kg" autocomplete="off" value="${escapeHtml(line.name || '')}">
+          </div>
+          <div class="item-input-wrap">
+            <label>Nominal</label>
+            <div class="money-input"><span>Rp</span><input class="item-amount" type="number" min="1" step="1" inputmode="numeric" placeholder="10000" value="${line.amount !== '' && line.amount != null ? Number(line.amount) : ''}"></div>
+          </div>
+          <button class="remove-item" type="button" aria-label="Hapus barang" title="Hapus barang">×</button>`;
+        $('itemRows').appendChild(row);
+        updateRemoveItemButtons();
+        recalculateItemTotal();
+        return row;
+      }
+
+      function updateRemoveItemButtons() {
+        const rows = [...$('itemRows').querySelectorAll('.item-row')];
+        rows.forEach(row => {
+          const remove = row.querySelector('.remove-item');
+          remove.disabled = rows.length <= 1;
+          remove.title = rows.length <= 1 ? 'Minimal satu barang' : 'Hapus barang ini';
+        });
+      }
+
+      function collectItemLines() {
+        return [...$('itemRows').querySelectorAll('.item-row')].map(row => ({
+          name: row.querySelector('.item-name').value.trim(),
+          amount: Math.floor(Number(row.querySelector('.item-amount').value))
+        }));
+      }
+
+      function recalculateItemTotal() {
+        const lines = collectItemLines();
+        const total = lines.reduce((sum, line) => sum + (Number.isSafeInteger(line.amount) && line.amount > 0 ? line.amount : 0), 0);
+        $('debtAmount').value = String(total);
+        $('calculatedDebtTotal').textContent = rupiah(total);
+        $('description').value = lines.filter(line => line.name).map(line => line.name).join(' · ');
+      }
+
+      function setItemRows(lines) {
+        $('itemRows').innerHTML = '';
+        const source = Array.isArray(lines) && lines.length ? lines : [{ name: '', amount: '' }];
+        source.forEach(line => addItemRow(line));
+        updateRemoveItemButtons();
+        recalculateItemTotal();
+      }
+
+      function resetForm() {
+        form.reset();
+        setItemRows([{ name: '', amount: '' }]);
+        editingId = null;
+        $('formTitle').textContent = 'Tambah catatan baru';
+        $('saveButton').textContent = '+ Simpan catatan';
+        $('initialPaymentField').hidden = false;
+        $('cancelEdit').hidden = true;
+      }
+
+      $('addItemButton').addEventListener('click', () => {
+        const row = addItemRow();
+        row.querySelector('.item-name').focus();
+      });
+      $('itemRows').addEventListener('input', event => {
+        if (event.target.matches('.item-name, .item-amount')) recalculateItemTotal();
+      });
+      $('itemRows').addEventListener('click', event => {
+        const remove = event.target.closest('.remove-item');
+        if (!remove || remove.disabled) return;
+        remove.closest('.item-row').remove();
+        updateRemoveItemButtons();
+        recalculateItemTotal();
+      });
+      $('getContactButton').addEventListener('click', async () => {
+        if (!navigator.contacts || typeof navigator.contacts.select !== 'function') {
+          return showToast('Get Kontak belum didukung browser ini. Coba Chrome Android melalui HTTPS.');
+        }
+        try {
+          const selected = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+          if (!selected || !selected.length) return;
+          const contact = selected[0];
+          const contactName = Array.isArray(contact.name) ? contact.name[0] : contact.name;
+          const contactPhone = Array.isArray(contact.tel) ? contact.tel[0] : contact.tel;
+          if (contactName) $('personName').value = String(contactName);
+          if (contactPhone) $('phoneNumber').value = String(contactPhone);
+          if (contactName || contactPhone) showToast('Kontak berhasil dimasukkan.');
+          else showToast('Kontak yang dipilih tidak memiliki nama atau nomor.');
+        } catch (error) {
+          if (error && error.name === 'AbortError') return;
+          console.warn('Contact Picker tidak tersedia:', error);
+          showToast('Tidak dapat membuka kontak. Pastikan browser mendukung Get Kontak dan halaman memakai HTTPS.');
+        }
+      });
+
+      form.addEventListener('submit', event => {
+        event.preventDefault();
+        const name = $('personName').value.trim();
+        const items = collectItemLines();
+        const phone = $('phoneNumber').value.trim();
+        const invalidLine = items.find(line => !line.name || !Number.isSafeInteger(line.amount) || line.amount <= 0);
+        const amount = items.reduce((sum, line) => sum + (Number.isSafeInteger(line.amount) && line.amount > 0 ? line.amount : 0), 0);
+        const description = items.filter(line => line.name).map(line => line.name).join(' · ');
+        $('debtAmount').value = String(amount);
+        $('description').value = description;
+        const initialPayment = editingId ? 0 : Math.floor(Number($('initialPayment').value) || 0);
+        if (!name) return showToast('Nama wajib diisi.');
+        if (!items.length || invalidLine) return showToast('Lengkapi nama barang dan nominal setiap barang.');
+        if (!Number.isSafeInteger(amount) || amount <= 0) return showToast('Total hutang harus lebih dari Rp0.');
+        if (!Number.isSafeInteger(initialPayment) || initialPayment < 0 || initialPayment > amount) return showToast('Pembayaran awal tidak boleh melebihi hutang.');
+        if (!editingId && initialPayment === amount) return showToast('Pembayaran awal sudah melunasi seluruh hutang. Tidak ada catatan aktif yang perlu disimpan.');
+
+        if (editingId) {
+          const item = debts.find(entry => entry.id === editingId);
+          if (!item) return resetForm();
+          if (amount <= totalPaid(item)) return showToast('Nominal hutang harus lebih besar dari total pembayaran yang sudah diterima.');
+          item.name = name;
+          item.description = description;
+          item.items = items;
+          item.phone = phone;
+          item.amount = amount;
+          item.updatedAt = new Date().toISOString();
+          showToast('Catatan berhasil diperbarui.');
+        } else {
+          const now = new Date().toISOString();
+          const payments = initialPayment > 0 ? [{ amount: initialPayment, date: now }] : [];
+          debts.push({ id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2)), name, description, items, phone, amount, payments, createdAt: now, updatedAt: now });
+          showToast('Catatan hutang berhasil disimpan.');
+        }
+        if (saveDebts()) {
+          resetForm();
+          render();
+        }
+      });
+
+      $('cancelEdit').addEventListener('click', resetForm);
+      $('searchInput').addEventListener('input', render);
+
+      function getDebt(id) { return debts.find(item => item.id === id); }
+      function normalizePhone(raw) {
+        let number = String(raw || '').replace(/[^0-9]/g, '');
+        if (number.startsWith('0')) number = '62' + number.slice(1);
+        else if (number.startsWith('8')) number = '62' + number;
+        return number;
+      }
+      function reminderText(item) {
+        const left = remaining(item);
+        const paid = totalPaid(item);
+        const greeting = `Halo ${item.name},`;
+        if (left === 0) {
+          return `${greeting}\n\nTerima kasih, pembayaran untuk ${item.description || 'tagihan Anda'} sebesar ${rupiah(item.amount)} sudah kami terima dan tercatat lunas. Mohon kabari kami apabila terdapat perbedaan catatan.\n\nTerima kasih.`;
+        }
+        const itemDetails = normalizeItemLines(item.items, item.description, item.amount).map(line => `• ${line.name}: ${rupiah(line.amount)}`).join('\n');
+        return `${greeting}\n\nIzin mengingatkan dengan sopan mengenai tagihan Anda.\n\nRincian barang:\n${itemDetails}\n\nTotal hutang: ${rupiah(item.amount)}\nSudah dibayar: ${rupiah(paid)}\nSisa pembayaran: *${rupiah(left)}*\n\nMohon bantu informasikan perkiraan waktu pembayarannya. Apabila pembayaran sudah dilakukan, pesan ini dapat diabaikan dan mohon kirimkan konfirmasinya agar catatan kami dapat diperbarui.\n\nTerima kasih atas perhatian dan kerja samanya.`;
+      }
+      async function copyText(text) {
+        try {
+          if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            const area = document.createElement('textarea');
+            area.value = text;
+            area.style.position = 'fixed';
+            area.style.opacity = '0';
+            document.body.appendChild(area);
+            area.select();
+            const success = document.execCommand('copy');
+            area.remove();
+            if (!success) throw new Error('Copy tidak tersedia');
+          }
+          showToast('Teks berhasil disalin.');
+        } catch (error) {
+          showToast('Tidak dapat menyalin otomatis. Coba gunakan WhatsApp.');
+        }
+      }
+
+      function animateRecordOut(id, message) {
+        const record = recordsEl.querySelector(`[data-record-id="${CSS.escape(id)}"]`);
+        if (record) record.classList.add('is-leaving');
+        setTimeout(() => {
+          render();
+          if (message) showToast(message);
+        }, 250);
+      }
+
+      recordsEl.addEventListener('click', async event => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const id = button.dataset.id;
+        const action = button.dataset.action;
+        const item = getDebt(id);
+        if (!item) return;
+
+        if (action === 'payment') {
+          openPaymentId = openPaymentId === id ? null : id;
+          render();
+          if (openPaymentId) setTimeout(() => $(`payment-${CSS.escape(id)}`)?.focus(), 0);
+        }
+        if (action === 'save-payment') {
+          const input = recordsEl.querySelector(`[data-payment-input="${CSS.escape(id)}"]`);
+          const amount = Math.floor(Number(input?.value));
+          if (!Number.isSafeInteger(amount) || amount <= 0) return showToast('Masukkan nominal pembayaran yang benar.');
+          if (amount > remaining(item)) return showToast('Pembayaran melebihi sisa hutang.');
+          const now = new Date().toISOString();
+          const previousUpdatedAt = item.updatedAt;
+          const previousDebts = debts;
+          const settlesDebt = amount === remaining(item);
+          item.payments.push({ amount, date: now, settlement: settlesDebt });
+          item.updatedAt = now;
+          if (settlesDebt) debts = debts.filter(entry => entry.id !== id);
+          if (saveDebts()) {
+            openPaymentId = null;
+            if (settlesDebt) {
+              animateRecordOut(id, 'Status: LUNAS. Catatan otomatis dihapus dari daftar.');
+            } else {
+              render();
+              showToast('Pembayaran berhasil dicatat.');
+            }
+          } else {
+            debts = previousDebts;
+            item.payments.pop();
+            item.updatedAt = previousUpdatedAt;
+          }
+        }
+        if (action === 'complete') {
+          const outstanding = remaining(item);
+          if (outstanding <= 0) return showToast('Catatan ini sudah lunas.');
+          const now = new Date().toISOString();
+          const previousUpdatedAt = item.updatedAt;
+          const previousDebts = debts;
+          item.payments.push({ amount: outstanding, date: now, settlement: true });
+          item.updatedAt = now;
+          debts = debts.filter(entry => entry.id !== id);
+          if (saveDebts()) {
+            openPaymentId = null;
+            animateRecordOut(id, 'Status: LUNAS. Catatan otomatis dihapus dari daftar.');
+          } else {
+            debts = previousDebts;
+            item.payments.pop();
+            item.updatedAt = previousUpdatedAt;
+          }
+        }
+        if (action === 'remind') {
+          const phone = normalizePhone(item.phone);
+          if (!phone) return showToast('Isi nomor WhatsApp melalui tombol Edit terlebih dahulu.');
+          if (phone.length < 9 || phone.length > 15) return showToast('Nomor WhatsApp tampaknya tidak valid.');
+          const url = `https://wa.me/${phone}?text=${encodeURIComponent(reminderText(item))}`;
+          window.open(url, '_blank', 'noopener,noreferrer');
+        }
+        if (action === 'copy') await copyText(reminderText(item));
+        if (action === 'edit') {
+          editingId = id;
+          $('personName').value = item.name;
+          $('description').value = item.description;
+          setItemRows(normalizeItemLines(item.items, item.description, item.amount));
+          $('phoneNumber').value = item.phone;
+          $('initialPaymentField').hidden = true;
+          $('formTitle').textContent = 'Edit catatan hutang';
+          $('saveButton').textContent = 'Simpan perubahan';
+          $('cancelEdit').hidden = false;
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          $('personName').focus({ preventScroll: true });
+        }
+        if (action === 'delete') {
+          if (!confirm(`Hapus catatan hutang ${item.name}? Tindakan ini tidak dapat dibatalkan.`)) return;
+          debts = debts.filter(entry => entry.id !== id);
+          if (openPaymentId === id) openPaymentId = null;
+          if (editingId === id) resetForm();
+          if (saveDebts()) { render(); showToast('Catatan berhasil dihapus.'); }
+        }
+      });
+
+      recalculateItemTotal();
+      render();
+    })();
+  </script>
+</body>
+</html>
