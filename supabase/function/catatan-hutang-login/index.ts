@@ -3,13 +3,13 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
 };
 
 function json(status: number, body: Record<string, unknown>) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, 'Content-Type': 'application/json; charset=utf-8' },
+    headers: { ...corsHeaders, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' },
   });
 }
 
@@ -34,14 +34,28 @@ function accountEmail(accountId: string) {
 
 Deno.serve(async (request: Request) => {
   if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
-  if (request.method !== 'POST') return json(405, { error: 'Metode tidak didukung' });
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const secretKeyMap = readKeyMap('SUPABASE_SECRET_KEYS');
     const publishableKeyMap = readKeyMap('SUPABASE_PUBLISHABLE_KEYS');
+    const environmentPublishableKey = publishableKeyMap.default || Object.values(publishableKeyMap)[0]
+      || Deno.env.get('SUPABASE_PUBLISHABLE_KEY') || Deno.env.get('SUPABASE_ANON_KEY') || '';
+
+    // GET: konfigurasi publik untuk website statis. Hanya Publishable Key yang boleh keluar.
+    // SUPABASE_SECRET_KEYS / service_role tidak pernah dikirim ke browser.
+    if (request.method === 'GET') {
+      if (!supabaseUrl || !environmentPublishableKey) {
+        console.error('Public runtime config missing:', { url: Boolean(supabaseUrl), publishableKey: Boolean(environmentPublishableKey) });
+        return json(503, { error: 'Environment Supabase belum menyediakan SUPABASE_URL dan SUPABASE_PUBLISHABLE_KEYS.default.' });
+      }
+      return json(200, { supabase_url: supabaseUrl, publishable_key: environmentPublishableKey });
+    }
+
+    if (request.method !== 'POST') return json(405, { error: 'Metode tidak didukung' });
+
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || secretKeyMap.default || Object.values(secretKeyMap)[0];
-    const anonKey = request.headers.get('apikey') || Deno.env.get('SUPABASE_ANON_KEY') || publishableKeyMap.default || Object.values(publishableKeyMap)[0];
+    const anonKey = request.headers.get('apikey') || environmentPublishableKey;
     const bootstrapAccountId = Deno.env.get('CATATAN_BOOTSTRAP_ACCOUNT_ID') ?? '';
     const bootstrapPin = Deno.env.get('CATATAN_BOOTSTRAP_PIN') ?? '';
 
