@@ -105,6 +105,7 @@
     const phone=String(c.phone||'');
     return {id:isUuid(c.id)?String(c.id):uid(),name:String(c.name||'Tanpa nama'),phone,phoneKey:normalizePhone(c.phoneKey||phone),note:String(c.note||''),items,total,paid,payments,createdAt:String(c.createdAt||today()),updatedAt:String(c.updatedAt||today()),_dbUpdatedAt:c._dbUpdatedAt||null};
   };
+  let defaultAccountId='';
   let sb=null, runtimeConfig=null, account=null, customers=[], editingId=null, editingBaseUpdatedAt=null, activeFilter='all', toastTimer=null, channel=null, pollTimer=null, loading=false, reloadAgain=false, cloudOnline=false, serverReachable=false, realtimeSubscribed=false;
   const cacheKey=()=>`catathutang_cloud_cache_${account?.account_code||'guest'}`;
 
@@ -116,7 +117,7 @@
   function switchPanel(name){document.querySelectorAll('[data-panel]').forEach(el=>el.hidden=el.dataset.panel!==name);document.querySelectorAll('.nav-btn').forEach(el=>el.classList.toggle('active',el.dataset.target===name));if(name==='list')renderRecords();if(name==='settings'){updateBackupOptions();updateStorageInfo();}window.scrollTo({top:0,behavior:'smooth'});}
   function showLogin(message=''){ $('loginScreen').hidden=false; $('loginError').textContent=message; $('loginButton').disabled=false; $('loginButton').textContent='MASUK KE AKUN PUSAT'; }
   function hideLogin(){ $('loginScreen').hidden=true; $('loginPin').value=''; }
-  function friendlyError(error){const m=String(error?.message||error||'Terjadi kesalahan');if(/duplicate key|unique constraint/i.test(m))return 'Nomor telepon sudah digunakan pelanggan lain.';if(/baru saja diubah dari perangkat lain/i.test(m))return 'Data sedang diedit dari HP lain. Data terbaru sudah dimuat; buka ulang Edit sebelum menyimpan.';if(/JWT|permission|row-level|not allowed/i.test(m))return 'Akses database ditolak. Pastikan SQL dan RLS sudah dipasang.';if(/fetch|network|Failed to/i.test(m))return 'Browser tidak dapat menghubungi Supabase. Periksa URL aplikasi, deployment API EdgeOne, dan koneksi internet. Ini belum tentu masalah sinyal HP.';return m.slice(0,240);}
+  function friendlyError(error){const m=String(error?.message||error||'Terjadi kesalahan');if(/duplicate key|unique constraint/i.test(m))return 'Nomor telepon sudah digunakan pelanggan lain.';if(/baru saja diubah dari perangkat lain/i.test(m))return 'Data sedang diedit dari HP lain. Data terbaru sudah dimuat; buka ulang Edit sebelum menyimpan.';if(/JWT|permission|row-level|not allowed/i.test(m))return 'Akses database ditolak. Pastikan SQL dan RLS sudah dipasang.';if(/fetch|network|Failed to/i.test(m))return 'Browser tidak dapat menghubungi API EdgeOne. Periksa deployment folder functions/api dan koneksi internet.';return m.slice(0,240);}
 
   // Supabase Auth menyimpan access/refresh token di IndexedDB perangkat ini.
   // PIN tidak pernah disimpan. Penyimpanan ini khusus sesi login, bukan database pusat.
@@ -179,27 +180,29 @@
   };
 
   async function callLoginFunction(accountId,pin){
-    if(!runtimeConfig?.url||!runtimeConfig?.publishableKey||!window.supabase?.createClient)throw new Error('Konfigurasi EdgeOne belum berhasil dimuat.');
+    if(!runtimeConfig?.url||!runtimeConfig?.publishableKey||!window.supabase?.createClient)
+      throw new Error('Konfigurasi Supabase dari Environment EdgeOne belum tersedia.');
     let response;
     try {
       response=await fetch('/api/login',{
         method:'POST',
         headers:{'Content-Type':'application/json','Accept':'application/json'},
-        body:JSON.stringify({account_id:accountId,pin}),
-        cache:'no-store'
+        cache:'no-store',
+        body:JSON.stringify({account_id:accountId,pin})
       });
     } catch (networkError) {
       console.error('EdgeOne login request failed:', networkError);
-      throw new Error('Tidak dapat menjangkau API EdgeOne. Periksa deployment Functions dan koneksi internet.');
+      throw new Error('Tidak dapat menjangkau API login EdgeOne. Periksa deployment Functions dan koneksi internet.');
     }
     const body=await response.json().catch(()=>({}));
     if(!response.ok) {
       const detail=body.error||`Login server gagal (HTTP ${response.status}).`;
-      if(response.status===404)throw new Error('API /api/login tidak ditemukan. Pastikan folder functions ikut ter-deploy pada EdgeOne.');
+      if(response.status===404)throw new Error('API /api/login tidak ditemukan. Pastikan folder functions/api ikut diunggah pada root repository dan deployment Production sudah selesai.');
       if(response.status===401)throw new Error(detail||'ID akun atau PIN tidak cocok.');
       throw new Error(detail);
     }
-    if(!body.session?.access_token||!body.session?.refresh_token)throw new Error('API EdgeOne tidak mengembalikan sesi login yang valid.');
+    if(!body.session?.access_token||!body.session?.refresh_token)
+      throw new Error('Server EdgeOne tidak mengembalikan sesi login yang lengkap.');
     return body.session;
   }
   async function activateAccount(){
@@ -318,7 +321,7 @@
 
   async function init(){
     $('loginForm').addEventListener('submit',login);
-    $('loginAccount').value='';$('accountDefaultLabel').textContent='Mengambil ID akun dari Environment EdgeOne...';
+    $('loginAccount').value='';$('accountDefaultLabel').textContent='Memuat konfigurasi...';
     document.querySelectorAll('.nav-btn').forEach(btn=>btn.addEventListener('click',()=>switchPanel(btn.dataset.target)));
     $('customerForm').addEventListener('submit',submitCustomer);$('addItem').addEventListener('click',()=>addItemRow());
     $('itemRows').addEventListener('click',event=>{if(event.target.closest('.remove-item')){const rows=document.querySelectorAll('.item-row');if(rows.length<=1){showToast('Minimal sisakan satu baris barang.');return;}event.target.closest('.item-row').remove();updateItemTotal();}});
@@ -330,21 +333,24 @@
     $('itemRows').innerHTML='';addItemRow();updateStats();renderRecords();
     window.addEventListener('online',()=>{if(account)loadRecords();else if(sb)restoreSavedSession();});window.addEventListener('offline',()=>{serverReachable=false;setCloudStatus('● OFFLINE',false);});
 
-    // Seluruh konfigurasi dibaca dari Environment Variables EdgeOne melalui API server.
-    // Hanya URL dan Publishable Key (memang bersifat publik) yang dikirim ke browser.
-    // Secret Key dan PIN bootstrap hanya digunakan oleh functions/api/login.js.
+    // Ambil konfigurasi publik dari EdgeOne Pages Function pada origin website ini.
+    // Hanya URL + Publishable Key yang boleh dikirim ke browser; Secret Key dan PIN tetap di server.
     try {
       if(!window.supabase?.createClient)throw new Error('Library Supabase belum termuat. Periksa koneksi CDN.');
       const response=await fetch('/api/runtime-config',{method:'GET',headers:{'Accept':'application/json'},cache:'no-store'});
       const payload=await response.json().catch(()=>({}));
-      if(!response.ok)throw new Error(payload.error||`Gagal membaca Environment EdgeOne (HTTP ${response.status}).`);
+      if(!response.ok){
+        if(response.status===404)throw new Error('API /api/runtime-config tidak ditemukan (HTTP 404). Folder functions/api belum terpasang pada root deployment EdgeOne atau belum ter-deploy.');
+        throw new Error(payload.error||`Gagal membaca Environment EdgeOne (HTTP ${response.status}).`);
+      }
       const runtimeUrl=String(payload.supabase_url||'').trim().replace(/\/$/,'');
-      const publishableKey=String(payload.publishable_key||'');
-      if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(runtimeUrl))throw new Error('SUPABASE_URL pada Environment EdgeOne tidak valid.');
-      if(!publishableKey)throw new Error('SUPABASE_PUBLISHABLE_KEY belum diisi di Environment EdgeOne.');
-      runtimeConfig={url:runtimeUrl,publishableKey,defaultAccountId:String(payload.default_account_id||'')};
-      $('loginAccount').value=runtimeConfig.defaultAccountId;
-      $('accountDefaultLabel').textContent=runtimeConfig.defaultAccountId||'Masukkan ID akun';
+      const publishableKey=String(payload.publishable_key||'').trim();
+      if(!/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(runtimeUrl))throw new Error('SUPABASE_URL di Environment EdgeOne tidak valid.');
+      if(!/^(sb_publishable_[A-Za-z0-9_-]+|eyJ[A-Za-z0-9_.-]+)$/.test(publishableKey))throw new Error('SUPABASE_PUBLISHABLE_KEY / SUPABASE_ANON_KEY belum terisi dengan Publishable Key yang benar.');
+      runtimeConfig={url:runtimeUrl,publishableKey};
+      defaultAccountId=String(payload.default_account_id||'');
+      $('loginAccount').value=defaultAccountId;
+      $('accountDefaultLabel').textContent=defaultAccountId||'Masukkan ID akun';
       const projectRef=new URL(runtimeConfig.url).hostname.split('.')[0];
       sb=window.supabase.createClient(runtimeConfig.url,runtimeConfig.publishableKey,{auth:{storage:authStorage,storageKey:`sb-${projectRef}-auth-token`,persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
     } catch(error) {
