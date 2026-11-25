@@ -3,7 +3,8 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS, HEAD',
+  'Access-Control-Max-Age': '86400',
 };
 
 function json(status: number, body: Record<string, unknown>) {
@@ -33,7 +34,9 @@ function accountEmail(accountId: string) {
 }
 
 Deno.serve(async (request: Request) => {
-  if (request.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders });
+  const method = request.method.toUpperCase();
+  if (method === 'OPTIONS') return new Response('ok', { status: 204, headers: corsHeaders });
+  if (method === 'HEAD') return new Response(null, { status: 204, headers: { ...corsHeaders, 'Allow': 'GET, POST, OPTIONS, HEAD' } });
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
@@ -44,7 +47,7 @@ Deno.serve(async (request: Request) => {
 
     // GET: konfigurasi publik untuk website statis. Hanya Publishable Key yang boleh keluar.
     // SUPABASE_SECRET_KEYS / service_role tidak pernah dikirim ke browser.
-    if (request.method === 'GET') {
+    if (method === 'GET') {
       if (!supabaseUrl || !environmentPublishableKey) {
         console.error('Public runtime config missing:', { url: Boolean(supabaseUrl), publishableKey: Boolean(environmentPublishableKey) });
         return json(503, { error: 'Environment Supabase belum menyediakan SUPABASE_URL dan SUPABASE_PUBLISHABLE_KEYS.default.' });
@@ -52,7 +55,12 @@ Deno.serve(async (request: Request) => {
       return json(200, { supabase_url: supabaseUrl, publishable_key: environmentPublishableKey });
     }
 
-    if (request.method !== 'POST') return json(405, { error: 'Metode tidak didukung' });
+    if (method !== 'POST') {
+      return new Response(JSON.stringify({ error: 'Metode tidak didukung. Gunakan GET untuk konfigurasi dan POST untuk login.' }), {
+        status: 405,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'Allow': 'GET, POST, OPTIONS, HEAD' },
+      });
+    }
 
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || secretKeyMap.default || Object.values(secretKeyMap)[0];
     const anonKey = request.headers.get('apikey') || environmentPublishableKey;
